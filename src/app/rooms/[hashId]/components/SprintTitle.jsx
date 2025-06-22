@@ -8,9 +8,15 @@ import { useClickOutside } from "@/hooks/use-click-outside";
 import { useRoom } from "@/app/rooms/[hashId]/context/RoomContext";
 import { debounce } from "lodash";
 import AIGenerateInput from "./AIGenerateInput";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function SprintTitle() {
-  const { roomName: contextRoomName, updateRoomName } = useRoom();
+  const { roomName: contextRoomName, updateRoomName, isRoomCreator } = useRoom();
   const [localRoomName, setLocalRoomName] = useState("");
   const [showAIInput, setShowAIInput] = useState(false);
   const dropdownRef = useRef(null);
@@ -29,6 +35,7 @@ export default function SprintTitle() {
   );
 
   const handleTitleOnChange = (e) => {
+    if (!isRoomCreator) return; // Prevent changes if not room creator
     handleTitleChange(e.target.value);
   };
 
@@ -41,6 +48,11 @@ export default function SprintTitle() {
     setShowAIInput(false);
   };
 
+  const handleAIButtonClick = () => {
+    if (!isRoomCreator) return; // Prevent AI input if not room creator
+    setShowAIInput(!showAIInput);
+  };
+
   useClickOutside(dropdownRef, closeAIInput);
 
   return (
@@ -50,17 +62,33 @@ export default function SprintTitle() {
           variant="ghost"
           size="icon"
           className="absolute right-0 w-8 cursor-pointer z-10 h-full hover:bg-transparent"
-          onClick={() => setShowAIInput(!showAIInput)}
+          onClick={handleAIButtonClick}
+          disabled={!isRoomCreator}
         >
           <Sparkles className="h-4 w-4" />
         </Button>
-        <Input
-          type="text"
-          placeholder="Sprint Title"
-          value={localRoomName}
-          onChange={handleTitleOnChange}
-          className="text-center text-lg font-medium"
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-full">
+                <Input
+                  type="text"
+                  placeholder="Sprint Title"
+                  value={localRoomName}
+                  onChange={handleTitleOnChange}
+                  className="text-center text-lg font-medium"
+                  readOnly={!isRoomCreator}
+                  disabled={!isRoomCreator}
+                />
+              </div>
+            </TooltipTrigger>
+            {!isRoomCreator && (
+              <TooltipContent>
+                <p>Only the room creator can modify the sprint title</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <AIGenerateInput
