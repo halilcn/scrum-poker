@@ -1,47 +1,37 @@
-"use client"
+"use client";
 
-import Link from 'next/link';
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginAnonymously } from "@/lib/firebase/actions";
-import { setUsernameCookie, setUserIdCookie, getUsernameCookie, getUserIdCookie, getRoomIdCookie } from "@/utils/cookieActions";
+import {
+  setUsernameCookie,
+  setUserIdCookie,
+  setRoomIdCookie,
+} from "@/utils/cookieActions";
+import withRedirectPage from "@/hocs/withRedirectPage";
 
-export default function Login() {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [checking, setChecking] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const userId = getUserIdCookie();
-    const username = getUsernameCookie();
-    if (userId && username) {
-      const roomId = getRoomIdCookie();
-      if (roomId) {
-        router.replace(`/rooms/${roomId}`);
-      } else {
-        router.replace("/welcome-user");
-      }
-    } else {
-      setChecking(false);
-    }
-  }, []);
+  const searchParams = useSearchParams();
 
-  if (checking) {
-    return null;
-  }
+  const roomId = searchParams.get("roomId");
+  const hasRoomId = !!roomId;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,6 +42,14 @@ export default function Login() {
       setUsernameCookie(username);
       setUserIdCookie(user.uid);
       // Başarılı login sonrası yönlendirme
+
+      if (hasRoomId) {
+        setRoomIdCookie(roomId);
+        router.push(`/rooms/${roomId}`);
+
+        return;
+      }
+
       router.push("/welcome-user");
     } catch (err) {
       setError("Login failed. Please try again.");
@@ -80,18 +78,22 @@ export default function Login() {
                   placeholder="Enter your username"
                   required
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={loading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
               </Button>
-              {error && <div className="text-red-500 text-center text-sm mt-2">{error}</div>}
+              {error && (
+                <div className="text-red-500 text-center text-sm mt-2">
+                  {error}
+                </div>
+              )}
             </form>
             <div className="mt-6 text-center">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="text-gray-600 hover:text-gray-700 text-sm font-medium inline-block hover:underline"
               >
                 ← Back to homepage
@@ -102,4 +104,6 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+};
+
+export default withRedirectPage(Login);

@@ -9,5 +9,13 @@ export const COLORS = {
   gray600: "#404040",
   gray700: "#262626",
   gray800: "#171717",
-  black: "#0a0a0a"
-}
+  black: "#0a0a0a",
+  blue400: "#60a5fa",
+  blue500: "#3b82f6",
+  blue600: "#2563eb",
+  "stori-poi": "#286ddb",
+};
+
+export const VOTING_CARDS = {
+  UNKNOWN: "?",
+};

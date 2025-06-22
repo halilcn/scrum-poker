@@ -7,7 +7,11 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'stori-poi': '#286ddb',
+      },
+    },
   },
   plugins: [],
 } 

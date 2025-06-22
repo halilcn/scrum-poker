@@ -1,13 +1,13 @@
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
 export const metadata = {
-  title: "Scrum Poker",
+  title: "StoriPoi",
   description:
-    "Planning poker için ekip arkadaşlarınızla birlikte tahmin yapın",
+    "Collaborate with your team to make accurate story point estimates using planning poker",
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.svg",
   },
 };
 

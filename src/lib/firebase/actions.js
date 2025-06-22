@@ -1,56 +1,19 @@
 import { signInAnonymously } from "firebase/auth";
 import { auth } from "@/lib/firebase/setup";
 import { db } from "@/lib/firebase/setup";
-import { ref, push, serverTimestamp, set, onValue, off } from "firebase/database";
+import { ref, push, serverTimestamp, set, onValue, off, update } from "firebase/database";
+import { remove as firebaseRemove, ref as dbRef } from "firebase/database";
 import {
   getUserIdCookie,
   getRoomIdCookie,
   removeRoomIdCookie,
   getUsernameCookie,
 } from "@/utils/cookieActions";
-import { remove as firebaseRemove, ref as dbRef } from "firebase/database";
 
 export async function loginAnonymously() {
   const result = await signInAnonymously(auth);
   return result.user;
 }
-
-/**
- * Room Schema Example:
- *
- * rooms/
- * ├── {roomId}/
- * │   ├── createdAt: timestamp
- * │   ├── createdBy: string (userId)
- * │   ├── participants/
- * │   │   ├── {userId}/
- * │   │   │   ├── userId: string
- * │   │   │   └── point: number | null
- * │   ├── roomName: string
- * │   └── status: "voting" | "completed"
- *
- * Example Data:
- * {
- *   "rooms": {
- *     "room123": {
- *       "createdAt": 1709123456789,
- *       "createdBy": "user456",
- *       "participants": {
- *         "user456": {
- *           "userId": "user456",
- *           "point": 5
- *         },
- *         "user789": {
- *           "userId": "user789",
- *           "point": null
- *         }
- *       },
- *       "roomName": "Sprint Planning",
- *       "status": "voting"
- *     }
- *   }
- * }
- */
 
 // Tek bir participant objesi döndürür
 const getRoomParticipant = ({ userId, username = "" }) => ({
@@ -73,7 +36,7 @@ export async function createRoom({ roomName }) {
   const roomData = {
     roomName,
     participants,
-    status: "voting",
+    status: "waiting",
     createdAt: serverTimestamp(),
     createdBy,
   };
@@ -139,3 +102,131 @@ export async function updateRoomName(roomName) {
   const roomNameRef = dbRef(db, `rooms/${roomId}/roomName`);
   await set(roomNameRef, roomName);
 }
+
+// Katılımcının point değerini günceller
+export async function updateParticipantPoint(point) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  const pointRef = dbRef(db, `rooms/${roomId}/participants/${userId}/point`);
+  await set(pointRef, point);
+}
+
+// Room status'ını günceller
+export async function updateRoomStatus(status) {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  const statusRef = dbRef(db, `rooms/${roomId}/status`);
+  await set(statusRef, status);
+}
+
+// Tüm katılımcıların point'lerini temizler ve status'ı voting yapar
+export async function resetRoomForNewVoting() {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  
+  // Önce mevcut participants'ları al
+  const participantsRef = dbRef(db, `rooms/${roomId}/participants`);
+  return new Promise((resolve) => {
+    onValue(participantsRef, async (snapshot) => {
+      if (snapshot.exists()) {
+        const participants = snapshot.val();
+        
+        // Tüm katılımcıların point'lerini null yap
+        const updates = {};
+        Object.keys(participants).forEach(userId => {
+          updates[`participants/${userId}/point`] = null;
+        });
+        
+        // Status'ı voting yap
+        updates['status'] = 'voting';
+        
+        // Batch update ile güncelle
+        const roomRef = dbRef(db, `rooms/${roomId}`);
+        await update(roomRef, updates);
+      }
+      resolve();
+    }, { onlyOnce: true });
+  });
+}
+
+// Kullanıcının belirli bir room'da participant olup olmadığını kontrol eder
+export async function checkUserIsParticipant(roomId, userId) {
+  if (!roomId || !userId) return false;
+  
+  const participantRef = dbRef(db, `rooms/${roomId}/participants/${userId}`);
+  return new Promise((resolve) => {
+    onValue(participantRef, (snapshot) => {
+      resolve(snapshot.exists());
+    }, { onlyOnce: true });
+  });
+}
+
+// Katılımcının active durumunu true yapar
+export async function setParticipantActive() {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  const activeRef = dbRef(db, `rooms/${roomId}/participants/${userId}/isActive`);
+  await set(activeRef, true);
+}
+
+// Katılımcının active durumunu false yapar
+export async function setParticipantInactive(specificRoomId = null) {
+  const roomId = specificRoomId || getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  const activeRef = dbRef(db, `rooms/${roomId}/participants/${userId}/isActive`);
+  await set(activeRef, false);
+}
+
+// Reaction ekler
+export async function addReaction(targetUserId, reaction) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId || !targetUserId || !reaction) return;
+  
+  const reactionsRef = dbRef(db, `rooms/${roomId}/reactions`);
+  const reactionData = {
+    userId: targetUserId,
+    reaction: reaction,
+    timestamp: serverTimestamp()
+  };
+  
+  await push(reactionsRef, reactionData);
+}
+
+// Reactions'ları dinlemek için subscription oluştur
+export function subscribeToReactions(roomId, callback) {
+  const reactionsRef = dbRef(db, `rooms/${roomId}/reactions`);
+  const unsubscribe = onValue(reactionsRef, callback);
+  return unsubscribe;
+}
+
+// Eski reaction'ları temizler (5 saniyeden eski olanları)
+export async function cleanOldReactions(roomId) {
+  if (!roomId) return;
+  
+  const reactionsRef = dbRef(db, `rooms/${roomId}/reactions`);
+  onValue(reactionsRef, async (snapshot) => {
+    if (snapshot.exists()) {
+      const reactions = snapshot.val();
+      const now = Date.now();
+      const updates = {};
+      
+      Object.keys(reactions).forEach((reactionId) => {
+        const reaction = reactions[reactionId];
+        // timestamp varsa ve 5 saniyeden eskiyse sil
+        if (reaction.timestamp && typeof reaction.timestamp === 'number' && (now - reaction.timestamp > 5000)) {
+          updates[reactionId] = null;
+        }
+      });
+      
+      if (Object.keys(updates).length > 0) {
+        await update(reactionsRef, updates);
+      }
+    }
+  }, { onlyOnce: true });
+}
+
+

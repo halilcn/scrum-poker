@@ -21,6 +21,7 @@ export function RoomProvider({ children }) {
   const [room, setRoom] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isRoomCreator, setIsRoomCreator] = useState(false);
 
   useEffect(() => {
     const roomId = getRoomIdCookie();
@@ -34,16 +35,17 @@ export function RoomProvider({ children }) {
     // Firebase'den room bilgilerini dinle
     const handleRoomUpdate = (snapshot) => {
       const roomData = snapshot.val();
-      
+
       if (roomData) {
         setRoom(roomData);
-        
+        setIsRoomCreator(roomData.createdBy === userId);
+
         // Participants içinden current user'ı bul
         if (roomData.participants && roomData.participants[userId]) {
           setCurrentUser(roomData.participants[userId]);
         }
       }
-      
+
       setLoading(false);
     };
 
@@ -58,7 +60,7 @@ export function RoomProvider({ children }) {
   // Participants değiştiğinde current user'ı güncelle
   useEffect(() => {
     if (!room || !room.participants) return;
-    
+
     const userId = getUserIdCookie();
     if (userId && room.participants[userId]) {
       setCurrentUser(room.participants[userId]);
@@ -69,6 +71,7 @@ export function RoomProvider({ children }) {
     room,
     currentUser,
     loading,
+    isRoomCreator,
     participants: room?.participants || {},
     roomName: room?.roomName || "",
     status: room?.status || "voting",
@@ -76,4 +79,4 @@ export function RoomProvider({ children }) {
   };
 
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
-} 
+}

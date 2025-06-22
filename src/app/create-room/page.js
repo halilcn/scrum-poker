@@ -1,6 +1,6 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getUsernameCookie, getUserIdCookie, getRoomIdCookie, setRoomIdCookie } from "@/utils/cookieActions";
+import {
+  getUserIdCookie,
+  getUsernameCookie,
+  getRoomIdCookie,
+  setRoomIdCookie,
+} from "@/utils/cookieActions";
 import { createRoom } from "@/lib/firebase/actions";
 
-export default function CreateRoom() {
+const CreateRoom = () => {
   const [roomName, setRoomName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,21 +29,17 @@ export default function CreateRoom() {
   const router = useRouter();
 
   useEffect(() => {
+    const roomId = getRoomIdCookie();
     const userId = getUserIdCookie();
     const username = getUsernameCookie();
-    const roomId = getRoomIdCookie();
-    if (roomId) {
-      router.replace(`/rooms/${roomId}`);
-    } else if (!userId || !username) {
+    if (!userId || !username) {
       router.replace("/login");
+    } else if (roomId) {
+      router.replace(`/rooms/${roomId}`);
     } else {
       setChecking(false);
     }
   }, []);
-
-  if (checking) {
-    return null;
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,18 +83,22 @@ export default function CreateRoom() {
                   placeholder="Enter your room name"
                   required
                   value={roomName}
-                  onChange={e => setRoomName(e.target.value)}
+                  onChange={(e) => setRoomName(e.target.value)}
                   disabled={loading}
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creating..." : "Create Room"}
               </Button>
-              {error && <div className="text-red-500 text-center text-sm mt-2">{error}</div>}
+              {error && (
+                <div className="text-red-500 text-center text-sm mt-2">
+                  {error}
+                </div>
+              )}
             </form>
             <div className="mt-6 text-center">
-              <Link 
-                href="/welcome-user" 
+              <Link
+                href="/welcome-user"
                 className="text-gray-600 hover:text-gray-700 text-sm font-medium inline-block hover:underline"
               >
                 ← Back to welcome page
@@ -104,4 +109,6 @@ export default function CreateRoom() {
       </div>
     </div>
   );
-} 
+};
+
+export default CreateRoom;

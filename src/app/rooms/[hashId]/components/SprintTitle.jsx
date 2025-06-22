@@ -46,21 +46,21 @@ export default function SprintTitle() {
   return (
     <div className="w-full max-w-xs mx-auto mb-8 relative" ref={dropdownRef}>
       <div className="relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-0 w-8 cursor-pointer z-10 h-full hover:bg-transparent"
+          onClick={() => setShowAIInput(!showAIInput)}
+        >
+          <Sparkles className="h-4 w-4" />
+        </Button>
         <Input
           type="text"
           placeholder="Sprint Title"
           value={localRoomName}
           onChange={handleTitleOnChange}
-          className="pr-12 text-center text-lg font-medium"
+          className="text-center text-lg font-medium"
         />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 cursor-pointer hover:bg-accent"
-          onClick={() => setShowAIInput(!showAIInput)}
-        >
-          <Sparkles className="h-4 w-4" />
-        </Button>
       </div>
 
       <AIGenerateInput

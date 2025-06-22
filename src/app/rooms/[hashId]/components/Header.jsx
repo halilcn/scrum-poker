@@ -21,7 +21,7 @@ export default function Header() {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [usernameLoading, setUsernameLoading] = useState(false);
-  
+
   const { currentUser } = useRoom();
   const username = currentUser?.username || "";
 
@@ -56,16 +56,28 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full border-b bg-white px-6 py-4">
-      <div className="flex items-center justify-between">
+    <header className="w-full border-b bg-white px-6 py-2">
+      <div className="flex items-center justify-between mx-auto max-w-6xl">
         {/* Sol taraf - Logo */}
-        <div className="flex items-center">
+        <div className="flex flex-col items-start">
           <img
-            src="/logo.png"
+            src="/storipoi.svg"
             alt="Storypointer Logo"
             className="h-8 w-auto"
-            style={{ height: 20 }}
+            style={{ height: 23 }}
           />
+          <p className="text-[11px] text-gray-400 mt-0.5">
+            sponsored by{" "}
+            <a
+              href="https://www.savaron.com.tr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+              style={{ color: "#6b016c" }}
+            >
+              Savaron
+            </a>
+          </p>
         </div>
 
         {/* Sağ taraf - Butonlar */}
