@@ -15,6 +15,7 @@ import { setUsernameCookie } from "@/utils/cookieActions";
 import { updateParticipantUsername } from "@/lib/firebase/actions";
 import ChangeUsernameDialog from "./ChangeUsernameDialog";
 import { useRoom } from "../context/RoomContext";
+import Image from "next/image";
 
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -66,16 +67,22 @@ export default function Header() {
             className="h-8 w-auto"
             style={{ height: 23 }}
           />
-          <p className="text-[11px] text-gray-400 mt-0.5">
-            sponsored by{" "}
+          <p className="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
+            <span>sponsored by</span>
             <a
               href="https://www.savaron.com.tr/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
-              style={{ color: "#6b016c" }}
+              className="hover:opacity-80 transition-opacity"
             >
-              Savaron
+              <Image
+                src="/savaron.svg"
+                alt="Savaron"
+                width={45}
+                height={7}
+                className="inline-block"
+                priority
+              />
             </a>
           </p>
         </div>
