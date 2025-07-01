@@ -16,6 +16,7 @@ import { updateParticipantUsername } from "@/lib/firebase/actions";
 import ChangeUsernameDialog from "./ChangeUsernameDialog";
 import { useRoom } from "../context/RoomContext";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -58,15 +59,22 @@ export default function Header() {
 
   return (
     <header className="w-full border-b bg-white px-6 py-2">
-      <div className="flex items-center justify-between mx-auto max-w-6xl">
+      <div className="flex items-center justify-between mx-auto max-w-6xl w-full">
         {/* Sol taraf - Logo */}
         <div className="flex flex-col items-start">
-          <img
-            src="/storipoi.svg"
-            alt="Storypointer Logo"
-            className="h-8 w-auto"
-            style={{ height: 23 }}
-          />
+          <Link
+            href="https://github.com/halilcn/scrum-poker"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="/storipoi.svg"
+              alt="Storypointer Logo"
+              className="h-8 w-auto"
+              style={{ height: 23 }}
+            />
+          </Link>
           <p className="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1">
             <span>sponsored by</span>
             <a

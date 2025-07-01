@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useRoom } from "@/app/rooms/[hashId]/context/RoomContext";
 import { VOTING_CARDS } from "@/constants";
-import { updateParticipantPoint } from "@/lib/firebase/actions";
+import { updateParticipantPoint, updateParticipantBreakStatus } from "@/lib/firebase/actions";
 
 export default function VotingCards() {
   const cardValues = [
@@ -22,8 +22,20 @@ export default function VotingCards() {
   const { status, currentUser } = useRoom();
 
   const handleCardSelect = async (value) => {
-    setSelectedCard(value);
-    await updateParticipantPoint(value);
+    // Eğer kullanıcı break modundaysa, önce break'i temizle
+    if (currentUser?.breakStatus && currentUser.breakStatus !== 'none') {
+      await updateParticipantBreakStatus('none', 0);
+    }
+
+    if (selectedCard === value) {
+      // Aynı karta tekrar tıklandıysa, seçimi kaldır
+      setSelectedCard(null);
+      await updateParticipantPoint(null);
+    } else {
+      // Farklı bir kart seçildiyse, normal şekilde güncelle
+      setSelectedCard(value);
+      await updateParticipantPoint(value);
+    }
   };
 
   const isVotingEnabled = status === "voting";
@@ -61,21 +73,34 @@ export default function VotingCards() {
               </span>
             </div>
             <div className="flex gap-2">
-              {cardValues.map((value) => (
-                <Button
-                  key={value}
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleCardSelect(value)}
-                  className={`w-14 h-16 text-lg font-bold cursor-pointer transition-all duration-200 hover:border-[#5c91e8] hover:text-[#5c91e8] ${
-                    selectedCard === value
-                      ? "border-[#5c91e8] text-[#5c91e8] -translate-y-2 shadow-md"
-                      : ""
-                  }`}
-                >
-                  {value}
-                </Button>
-              ))}
+              {cardValues.map((value) => {
+                const isUnknownCard = value === VOTING_CARDS.UNKNOWN;
+                const isSelected = selectedCard === value;
+                
+                return (
+                  <Button
+                    key={value}
+                    variant="outline"
+                    size="lg"
+                    onClick={() => handleCardSelect(value)}
+                    className={`w-14 h-16 text-lg font-bold cursor-pointer transition-all duration-200 ${
+                      isUnknownCard
+                        ? `border-2 ${
+                            isSelected
+                              ? "border-[#5c91e8] text-[#5c91e8] -translate-y-2 shadow-md"
+                              : "border-orange-400 text-orange-400 bg-orange-25 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
+                          }`
+                        : `hover:border-[#5c91e8] hover:text-[#5c91e8] ${
+                            isSelected
+                              ? "border-[#5c91e8] text-[#5c91e8] -translate-y-2 shadow-md"
+                              : ""
+                          }`
+                    }`}
+                  >
+                    {value}
+                  </Button>
+                );
+              })}
             </div>
           </div>
         </motion.div>

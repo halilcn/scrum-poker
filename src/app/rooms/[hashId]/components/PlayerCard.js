@@ -9,23 +9,26 @@ import EmojiPicker from "emoji-picker-react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { addReaction } from "@/lib/firebase/actions";
 import { getUserIdCookie } from "@/utils/cookieActions";
+import { MoreVertical, Coffee } from "lucide-react";
+import UserActionsDialog from "./UserActionsDialog";
 
 import "./PlayerCard.css";
 
 const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [showRevealedCard, setShowRevealedCard] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const emojiPickerRef = useRef(null);
   const previousStatusRef = useRef(null);
 
-  const { status, currentUser } = useRoom();
+  const { status, currentUser, isRoomCreator } = useRoom();
 
   // Status değişimini takip et
   useEffect(() => {
     // İlk mount'ta previousStatusRef'i set et
     if (previousStatusRef.current === null) {
       previousStatusRef.current = status;
-      
+
       // İlk mount'ta status zaten completed ise kartları direkt göster
       if (status === "completed") {
         setShowRevealedCard(true);
@@ -123,48 +126,88 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
     setIsEmojiPickerOpen(true);
   };
 
-  const handleOnMouseLeavePlayerCard = () => {
+  const handleOnMouseLeavePlayerCard = (e) => {
+    // Mouse dialog'a gidiyorsa emoji picker'ı kapatma
+    if (e.relatedTarget?.closest('[role="dialog"]')) {
+      return;
+    }
     setIsEmojiPickerOpen(false);
   };
 
   const handleOnReactionClick = (emojiData) => {
+    console.log("emojiData", emojiData);
     handleThrowEmoji(emojiData.emoji);
   };
 
+  const handleSettingsClick = (e) => {
+    e.stopPropagation();
+    setIsEmojiPickerOpen(false);
+    setIsSettingsDialogOpen(true);
+  };
+
   return (
-    <div
-      ref={ref}
-      className="flex flex-col items-center gap-2 p-2 relative"
-      onMouseEnter={handleOnMouseEnterPlayerCard}
-      onMouseLeave={handleOnMouseLeavePlayerCard}
-    >
-      {/* Kart Alanı */}
-      <div>{renderCard()}</div>
+    <>
+      <div
+        ref={ref}
+        className="flex flex-col items-center gap-2 p-2 relative"
+        onMouseEnter={handleOnMouseEnterPlayerCard}
+        onMouseLeave={handleOnMouseLeavePlayerCard}
+      >
+        {/* Kart Alanı */}
+        <div>{renderCard()}</div>
 
-      {isEmojiPickerOpen && (
-        <div
-          ref={emojiPickerRef}
-          className="absolute top-[-50px] left-auto right-auto"
-        >
-          <EmojiPicker
-            reactionsDefaultOpen={true}
-            onReactionClick={handleOnReactionClick}
-            onEmojiClick={handleOnReactionClick}
-          />
+        {isEmojiPickerOpen && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute top-[-50px] left-auto right-auto flex items-center gap-2"
+          >
+            <div>
+              <EmojiPicker
+                reactionsDefaultOpen={true}
+                onReactionClick={handleOnReactionClick}
+                onEmojiClick={handleOnReactionClick}
+                reactions={["1f44d", "2764-fe0f", "1f621", "1f602"]}
+              />
+            </div>
+            {isRoomCreator && (
+              <button
+                onClick={handleSettingsClick}
+                className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors cursor-pointer shadow-sm"
+                style={{ backgroundColor: COLORS.white }}
+              >
+                <MoreVertical size={18} color={COLORS.gray600} />
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Kullanıcı İsmi */}
+        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-[110px]">
+          <div className="flex items-center justify-center gap-1">
+            <p
+              className="text-sm font-medium truncate"
+              style={{ color: COLORS.gray800 }}
+              title={player.username}
+            >
+              {player.username}
+            </p>
+            {player.breakStatus && player.breakStatus !== "none" && (
+              <Coffee
+                className="w-4 h-4 flex-shrink-0"
+                style={{ color: COLORS["stori-poi"] }}
+              />
+            )}
+          </div>
         </div>
-      )}
-
-      {/* Kullanıcı İsmi */}
-      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-[110px]">
-        <p
-          className="text-sm font-medium truncate"
-          style={{ color: COLORS.gray800 }}
-          title={player.username}
-        >
-          {player.username}
-        </p>
       </div>
-    </div>
+
+      {/* Settings Dialog */}
+      <UserActionsDialog
+        isOpen={isSettingsDialogOpen}
+        onOpenChange={setIsSettingsDialogOpen}
+        player={player}
+      />
+    </>
   );
 });
 

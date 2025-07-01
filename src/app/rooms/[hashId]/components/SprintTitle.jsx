@@ -16,10 +16,12 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function SprintTitle() {
-  const { roomName: contextRoomName, updateRoomName, isRoomCreator } = useRoom();
+  const { roomName: contextRoomName, updateRoomName } = useRoom();
   const [localRoomName, setLocalRoomName] = useState("");
   const [showAIInput, setShowAIInput] = useState(false);
   const dropdownRef = useRef(null);
+
+  const isRoomCreator = true
 
   // Component mount olduğunda context'teki roomName ile sync yap
   useEffect(() => {

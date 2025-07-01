@@ -21,6 +21,8 @@ const getRoomParticipant = ({ userId, username = "" }) => ({
   username,
   point: null,
   isActive: true,
+  breakStatus: 'none',
+  breakSeconds: 0,
 });
 
 // Birden fazla participant için obje döndürür (ör: oda oluştururken)
@@ -227,6 +229,40 @@ export async function cleanOldReactions(roomId) {
       }
     }
   }, { onlyOnce: true });
+}
+
+// Kick a specific user from the room
+export async function kickUserFromRoom(targetUserId) {
+  const roomId = getRoomIdCookie();
+  if (!roomId || !targetUserId) return;
+  
+  const participantRef = dbRef(db, `rooms/${roomId}/participants/${targetUserId}`);
+  await firebaseRemove(participantRef);
+}
+
+// Update participant break status
+export async function updateParticipantBreakStatus(status, seconds = 0) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  
+  const participantRef = dbRef(db, `rooms/${roomId}/participants/${userId}`);
+  const updates = {
+    breakStatus: status,
+    breakSeconds: seconds
+  };
+  
+  await update(participantRef, updates);
+}
+
+// Update participant break seconds (for countdown)
+export async function updateParticipantBreakSeconds(seconds) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  
+  const breakSecondsRef = dbRef(db, `rooms/${roomId}/participants/${userId}/breakSeconds`);
+  await set(breakSecondsRef, seconds);
 }
 
 

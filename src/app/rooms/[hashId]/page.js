@@ -7,7 +7,7 @@ import Header from "./components/Header";
 import SprintTitle from "./components/SprintTitle";
 import VotingCards from "./components/VotingCards";
 import GameContent from "./components/GameContent";
-import { RoomProvider } from "./context/RoomContext";
+import { RoomProvider, useRoom } from "./context/RoomContext";
 import withRedirectPage from "@/hocs/withRedirectPage";
 import {
   checkRoomExists,
@@ -21,8 +21,10 @@ import {
   getUsernameCookie,
   getRoomIdCookie,
   setRoomIdCookie,
+  removeRoomIdCookie,
 } from "@/utils/cookieActions";
 import Test from "./components/Test";
+import BreakButton from "./components/BreakButton";
 
 const ScrumRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -142,26 +144,61 @@ const ScrumRoom = () => {
 
   return (
     <RoomProvider>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
-        {/* <Test /> */}
-        {/* Content Area - Header altındaki tüm alan */}
-        <main className="flex-1 flex flex-col">
-          {/* Sprint Title - Content'in en üstü */}
-          <div className="pt-4">
-            <SprintTitle />
-          </div>
-
-          {/* Main Content Area - Geri kalan alan */}
-          <div className="flex-1 px-6 pb-24">
-            <GameContent />
-          </div>
-        </main>
-
-        {/* Voting Cards - Fixed bottom */}
-        <VotingCards />
-      </div>
+      <ScrumRoomWithKickDetection />
     </RoomProvider>
+  );
+};
+
+// Inner component that uses useRoom hook
+const ScrumRoomWithKickDetection = () => {
+  const router = useRouter();
+  const { participants } = useRoom();
+  const userId = getUserIdCookie();
+
+  const [mounted, setMounted] = useState(false);
+
+  // Kullanıcının room'dan atılıp atılmadığını kontrol et
+  useEffect(() => {
+    if (!participants || !userId || !mounted) return;
+
+    // Eğer kullanıcı artık participants listesinde yoksa
+    if (!participants[userId]) {
+      console.log("participants", participants);
+      // Cookie'den room ID'yi sil
+      removeRoomIdCookie();
+
+      // Kullanıcıyı welcome-user sayfasına yönlendir
+      router.replace("/welcome-user");
+    }
+  }, [JSON.stringify(participants)]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMounted(true);
+    }, 1000);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center">
+      <Header />
+      {/* <Test /> */}
+      {/* Content Area - Header altındaki tüm alan */}
+      <main className="flex-1 flex flex-col max-w-6xl w-full relative">
+        <BreakButton />
+        {/* Sprint Title - Content'in en üstü */}
+        <div className="pt-4">
+          <SprintTitle />
+        </div>
+
+        {/* Main Content Area - Geri kalan alan */}
+        <div className="flex-1 px-6 pb-24">
+          <GameContent />
+        </div>
+      </main>
+
+      {/* Voting Cards - Fixed bottom */}
+      <VotingCards />
+    </div>
   );
 };
 
