@@ -16,12 +16,14 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function SprintTitle() {
-  const { roomName: contextRoomName, updateRoomName } = useRoom();
+  const {
+    roomName: contextRoomName,
+    updateRoomName,
+    isRoomCreator,
+  } = useRoom();
   const [localRoomName, setLocalRoomName] = useState("");
   const [showAIInput, setShowAIInput] = useState(false);
   const dropdownRef = useRef(null);
-
-  const isRoomCreator = true
 
   // Component mount olduğunda context'teki roomName ile sync yap
   useEffect(() => {
@@ -58,12 +60,16 @@ export default function SprintTitle() {
   useClickOutside(dropdownRef, closeAIInput);
 
   return (
-    <div className="w-full max-w-xs mx-auto mb-8 relative" ref={dropdownRef}>
-      <div className="relative">
+    <div className="w-full max-w-sm mx-auto mb-10 relative" ref={dropdownRef}>
+      <div className="relative bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-0 w-8 cursor-pointer z-10 h-full hover:bg-transparent"
+          className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 cursor-pointer z-10 rounded-full transition-colors duration-200 ${
+            isRoomCreator
+              ? "hover:bg-gray-100 text-gray-600"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
           onClick={handleAIButtonClick}
           disabled={!isRoomCreator}
         >
@@ -78,7 +84,11 @@ export default function SprintTitle() {
                   placeholder="Sprint Title"
                   value={localRoomName}
                   onChange={handleTitleOnChange}
-                  className="text-center text-lg font-medium"
+                  className={`text-center text-lg font-medium py-5 px-6 border-0 bg-transparent focus:ring-0 focus-visible:ring-0 placeholder:text-gray-400 ${
+                    !isRoomCreator
+                      ? "cursor-not-allowed opacity-60 text-gray-500"
+                      : "text-gray-900"
+                  }`}
                   readOnly={!isRoomCreator}
                   disabled={!isRoomCreator}
                 />
