@@ -10,7 +10,7 @@ export default function CardTooltip({
   shouldShow = false,
   isLower = false,
   isHigher = false,
-  autoHideDelay = 7000, // 7 seconds default
+  autoHideDelay = 15000, // 15 seconds default
 }) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -18,7 +18,7 @@ export default function CardTooltip({
   useEffect(() => {
     if (shouldShow) {
       setIsVisible(true);
-      
+
       // Auto hide after delay
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -72,16 +72,28 @@ export default function CardTooltip({
           className="flex-shrink-0"
         >
           <circle cx="12" cy="12" r="10" fill="#F59E0B" />
-          <path d="m12 8v4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="m12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path
+            d="m12 8v4"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="m12 16h.01"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
 
         {/* Tooltip Text */}
-        <span 
+        <span
           className="flex-1"
           dangerouslySetInnerHTML={{
-            __html: message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          }} 
+            __html: message.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+          }}
         />
 
         {/* Tooltip Arrow */}
