@@ -1,0 +1,39 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🎯 GENEL KODLAMA KURALLARI - Scrum Poker Project
+
+## Temel Prensipler
+- Always use functional components with hooks (NO class components)
+- Use external methods instead of internal component props
+- Import with '@' alias for project imports (e.g., '@/components', '@/utils')
+- Always use static imports at the top of the file instead of dynamic imports
+- Prefer server components over client components when possible (use "use client" only when necessary)
+
+## Dosya Yapısı Kuralları
+- `/src/components/ui/` - Reusable shadcn/ui components only
+- `/src/components/` - Shared components across the app
+- `/src/app/[page]/components/` - Page-specific components
+- `/src/constants/` - All constant values (UPPER_SNAKE_CASE)
+- `/src/utils/` - Pure utility functions (no side effects)
+- `/src/lib/` - Third-party library configurations and complex business logic
+- `/src/hooks/` - Custom React hooks only
+- `/src/requests/` - API call helpers and HTTP configurations
+
+## İsimlendirme Konvansiyonları
+- **Files:** PascalCase for components (.js/.jsx), camelCase for utilities
+- **Components:** PascalCase (e.g., `PlayerCard`, `SprintTitle`)
+- **Functions:** camelCase (e.g., `getUsernameCookie`, `handleSubmit`)
+- **Variables:** camelCase (e.g., `localRoomName`, `isLoading`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `COOKIE_USERNAME`, `COLORS`)
+- **Folders:** kebab-case (e.g., `sprint-name`, `create-room`)
+
+## Code Quality Rules
+- Maximum component length: 300 lines
+- Maximum function length: 50 lines
+- Use TypeScript-style JSDoc for complex functions
+- Prefer early returns over nested conditions
+- Use descriptive variable names (avoid abbreviations)
+- Always handle loading and error states in components 

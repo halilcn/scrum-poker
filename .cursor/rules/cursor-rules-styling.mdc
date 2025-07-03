@@ -1,0 +1,46 @@
+# 🎨 STYLING VE TASARIM KURALLARI - Scrum Poker Project
+
+## Ana Renk Paleti
+- **Primary Color:** #286ddb (Stori-Poi blue)
+- **Usage:** COLORS constant from @/constants kullan
+- **CSS Variable:** Use custom CSS properties: `style={{ color: COLORS['stori-poi'] }}`
+
+## Tailwind CSS Kuralları
+- Prefer Tailwind classes over custom CSS
+- Use custom CSS only for complex animations or unique designs
+- Class order: layout → spacing → typography → colors → effects
+- Example: `"flex items-center justify-center gap-2 p-4 text-lg font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg shadow-md"`
+
+## Component Styling Patterns
+- Use inline styles ONLY for dynamic values (colors, positions)
+- Keep component-specific styles in separate .css files (e.g., `PlayerCard.css`)
+- Global styles go in `globals.css`
+- Animation keyframes should be defined in component-level CSS or inline `<style jsx>`
+
+## Responsive Design
+- Mobile-first approach with Tailwind breakpoints
+- Use: `sm:` (640px+), `md:` (768px+), `lg:` (1024px+), `xl:` (1280px+)
+- Test on mobile devices during development
+
+## UI Component Guidelines
+- Use shadcn/ui components from `/components/ui/` as base
+- Extend with custom classes, don't modify base component files
+- For complex styling, create wrapper components
+- Maintain consistent spacing: use Tailwind spacing scale (1, 2, 4, 6, 8, 12, 16, 20, 24, 32)
+
+## Icon Usage
+- Primary: Lucide React icons (`lucide-react`)
+- Size conventions: `w-4 h-4` (16px), `w-5 h-5` (20px), `w-6 h-6` (24px)
+- Color: Use `style={{ color: COLORS.gray600 }}` instead of Tailwind color classes for dynamic colors
+
+## Animation Guidelines
+- Use Framer Motion for complex animations
+- Use Lottie React for predefined animations (countdown, sleep, time)
+- CSS animations for simple hover/focus effects
+- Animation duration: 200ms for micro-interactions, 300ms for state changes
+
+## Layout Patterns
+- Card-based layouts with shadows: `shadow-sm`, `shadow-md`, `shadow-lg`
+- Rounded corners: `rounded-lg` (8px) for cards, `rounded-xl` (12px) for modals
+- Use `max-w-*` classes to control content width
+- Center content with `mx-auto` for horizontal, `flex items-center justify-center` for both axes 

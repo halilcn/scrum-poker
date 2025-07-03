@@ -4,13 +4,15 @@ import PlayingCard from "./PlayingCard";
 import { COLORS } from "@/constants";
 import { useRoom } from "@/app/rooms/[hashId]/context/RoomContext";
 import { Card } from "@/components/ui/card";
-import { forwardRef, useState, useRef, useEffect } from "react";
+import { forwardRef, useState, useRef, useEffect, useMemo } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { addReaction } from "@/lib/firebase/actions";
 import { getUserIdCookie } from "@/utils/cookieActions";
 import { MoreVertical, Coffee } from "lucide-react";
 import UserActionsDialog from "./UserActionsDialog";
+import CardTooltip from "@/components/CardTooltip";
+import { calculateAverage, shouldShowTooltip } from "@/utils/calculateAverage";
 
 import "./PlayerCard.css";
 
@@ -18,10 +20,33 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [showRevealedCard, setShowRevealedCard] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [shouldShowDiffTooltip, setShouldShowDiffTooltip] = useState(false);
   const emojiPickerRef = useRef(null);
   const previousStatusRef = useRef(null);
 
-  const { status, currentUser, isRoomCreator } = useRoom();
+  const { status, currentUser, isRoomCreator, participants } = useRoom();
+
+  // Tooltip hesaplamalarını optimize et
+  const tooltipData = useMemo(() => {
+    if (!participants || !player.point) {
+      return { 
+        roundedAverage: null, 
+        shouldShow: false, 
+        isLower: false, 
+        isHigher: false 
+      };
+    }
+
+    const { roundedAverage } = calculateAverage(participants);
+    const tooltipConfig = shouldShowTooltip(player.point, roundedAverage);
+
+    return {
+      roundedAverage,
+      shouldShow: tooltipConfig.shouldShow,
+      isLower: tooltipConfig.isLower,
+      isHigher: tooltipConfig.isHigher
+    };
+  }, [participants, player.point]);
 
   // Status değişimini takip et
   useEffect(() => {
@@ -41,14 +66,18 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
       // 5 saniye bekle ve kartları göster
       const timer = setTimeout(() => {
         setShowRevealedCard(true);
+        
+        // Kartlar açıldıktan sonra tooltip kontrolü yap
+        checkAndShowTooltip();
       }, 5000);
 
       return () => clearTimeout(timer);
     }
 
-    // Status voting'e geri döndüğünde kartları gizle
+    // Status voting'e geri döndüğünde kartları gizle ve tooltip'i kapat
     if (status === "voting") {
       setShowRevealedCard(false);
+      setShouldShowDiffTooltip(false);
     }
 
     // Önceki status'u güncelle
@@ -59,6 +88,15 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
   useClickOutside(emojiPickerRef, () => {
     setIsEmojiPickerOpen(false);
   });
+
+  // Tooltip kontrolü yap - tüm oyuncular için
+  const checkAndShowTooltip = () => {
+    // Herhangi bir oyuncunun puanı ortalamadan farklıysa, 
+    // o oyuncunun kartında tooltip göster (tüm oyunculara görünür)
+    if (tooltipData.shouldShow) {
+      setShouldShowDiffTooltip(true);
+    }
+  };
 
   const renderCard = () => {
     const hasPoint = player.point !== null && player.point !== undefined;
@@ -154,7 +192,15 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
         onMouseLeave={handleOnMouseLeavePlayerCard}
       >
         {/* Kart Alanı */}
-        <div>{renderCard()}</div>
+        <CardTooltip
+          userPoint={player.point}
+          roundedAverage={tooltipData.roundedAverage}
+          shouldShow={shouldShowDiffTooltip}
+          isLower={tooltipData.isLower}
+          isHigher={tooltipData.isHigher}
+        >
+          <div>{renderCard()}</div>
+        </CardTooltip>
 
         {isEmojiPickerOpen && (
           <div

@@ -19,3 +19,5 @@ export const COLORS = {
 export const VOTING_CARDS = {
   UNKNOWN: "?",
 };
+
+export const cardValues = ["1", "2", "3", "5", "8", "13", "21"];

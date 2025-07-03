@@ -10,6 +10,7 @@ import {
 } from "@/lib/firebase/actions";
 import Lottie from "lottie-react";
 import { useState, useEffect, useRef } from "react";
+import { calculateAverage } from "@/utils/calculateAverage";
 
 // Status constants
 const ROOM_STATUS = {
@@ -180,18 +181,7 @@ const CompletedContent = ({
 
   // Calculate average from participants with numeric points
   console.log("participants", participants);
-  const calculateAverage = () => {
-    const numericPoints = Object.values(participants)
-      .filter((participant) => participant.point !== "?" && !!participant.point)
-      .map((participant) => Number(participant.point));
-
-    if (numericPoints.length === 0) return 0;
-
-    const sum = numericPoints.reduce((acc, point) => acc + point, 0);
-    return (sum / numericPoints.length).toFixed(1);
-  };
-
-  const average = calculateAverage();
+  const { average } = calculateAverage(participants);
 
   const handleStartAgain = async () => {
     await resetRoomForNewVoting();

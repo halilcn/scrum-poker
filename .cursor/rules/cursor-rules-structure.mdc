@@ -1,0 +1,93 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🏗️ DOSYA YAPISI VE ORGANİZASYON KURALLARI - Scrum Poker Project
+
+## Klasör Hierarşisi ve Sorumlulukları
+
+### `/src/app/` - Next.js App Router
+- **pages:** Her klasör bir route (e.g., `/create-room`, `/join-room`)
+- **[hashId]:** Dynamic routes için bracket notation
+- **api/:** API routes (e.g., `/api/sprint-name/generate`)
+- **Rule:** Page components should be named `page.js`, layouts as `layout.js`
+
+### `/src/components/ui/` - Shadcn/UI Components
+- **Rule:** NEVER modify these files directly
+- **Usage:** Import and extend with custom props/styling
+- **Example:** `import { Button } from "@/components/ui/button"`
+- **Forbidden:** Custom business logic in UI components
+
+### `/src/components/` - Shared Application Components
+- **Rule:** Components used across multiple pages
+- **Naming:** PascalCase.jsx (e.g., `LoadingSpinner.jsx`)
+- **Structure:** One component per file
+- **Exports:** Default export for main component
+
+### `/src/app/[page]/components/` - Page-Specific Components
+- **Rule:** Components ONLY used within that specific page
+- **Example:** `/src/app/rooms/[hashId]/components/PlayerCard.js`
+- **Forbidden:** Import these components from other pages
+- **Allowed:** Import from `/src/components/` into page-specific components
+
+### `/src/constants/` - Sabit Değerler
+- **Files:** `cookie.js`, `index.js`, `prompts.js`
+- **Naming:** UPPER_SNAKE_CASE for exports
+- **Rule:** ALL magic strings and numbers must be defined here
+- **Example:** `export const COOKIE_USERNAME = "scrum_poker_username";`
+
+### `/src/utils/` - Pure Utility Functions
+- **Rule:** NO side effects, NO React hooks, NO component imports
+- **Example:** `cookieActions.js` - cookie get/set/remove functions
+- **Forbidden:** Firebase calls, API calls, React state
+- **Return:** Always return values, don't mutate inputs
+
+### `/src/lib/` - Third-party Integrations & Complex Logic
+- **Firebase:** `/firebase/setup.js` (config), `/firebase/actions.js` (CRUD operations)
+- **Rule:** Complex business logic and external service integrations
+- **Allowed:** Database operations, external API configurations
+- **Example:** Firebase database actions, utility class instances
+
+### `/src/hooks/` - Custom React Hooks
+- **Rule:** Start with `use` prefix (e.g., `useClickOutside`, `useMobile`)
+- **Purpose:** Reusable stateful logic
+- **Forbidden:** Component rendering, business logic without React state
+- **Pattern:** Return objects with descriptive names
+
+### `/src/requests/` - API Call Helpers
+- **Rule:** HTTP request configurations and API endpoint management
+- **Purpose:** Centralized API calling logic
+- **Example:** Axios instances, request interceptors
+- **Forbidden:** React state management, component logic
+
+### `/src/hocs/` - Higher-Order Components
+- **Rule:** Component wrappers that add functionality
+- **Naming:** `with` prefix (e.g., `withRedirectPage.jsx`)
+- **Usage:** Authentication, route protection, common layout logic
+- **Pattern:** Return component that wraps the input component
+
+## Dosya İçeri/Dışarı Aktarma Kuralları
+
+### Import Sırası (her dosyada):
+1. `"use client"` directive (if needed)
+2. React/Next.js imports
+3. Third-party libraries (alphabetical)
+4. Internal components (`@/components`)
+5. Internal utilities (`@/utils`, `@/lib`, `@/hooks`)
+6. Constants (`@/constants`)
+7. Styles (`.css` files)
+
+### Export Kuralları:
+- **Components:** Default export with named function
+- **Utilities:** Named exports
+- **Constants:** Named exports
+- **Hooks:** Default export for main hook
+
+## Forbidden Cross-References
+- ❌ `/src/utils/` CANNOT import from `/src/components/`
+- ❌ `/src/constants/` CANNOT import from other directories
+- ❌ `/src/components/ui/` CANNOT be modified
+- ❌ Page-specific components CANNOT be imported across pages
+- ✅ All directories CAN import from `/src/constants/`
+- ✅ All directories CAN import from `/src/utils/` 

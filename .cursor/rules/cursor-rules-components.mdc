@@ -1,0 +1,223 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ⚛️ REACT COMPONENT KURALLARI - Scrum Poker Project
+
+## Component Structure Patterns
+
+### Functional Components Only:
+- **NEVER use class components**
+- **Always use React hooks for state management**
+- **Use `forwardRef` when ref forwarding is needed**
+- **Example:**
+```javascript
+const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
+  // Component logic
+});
+```
+
+### Component File Structure:
+```javascript
+"use client"; // Only if client-side features needed
+
+// 1. React/Next imports
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
+// 2. Third-party libraries
+import { debounce } from "lodash";
+
+// 3. Internal components
+import { Button } from "@/components/ui/button";
+import CustomComponent from "@/components/CustomComponent";
+
+// 4. Utilities and hooks
+import { useClickOutside } from "@/hooks/use-click-outside";
+import { getUserIdCookie } from "@/utils/cookieActions";
+
+// 5. Constants
+import { COLORS } from "@/constants";
+
+// 6. Styles
+import "./ComponentName.css";
+
+export default function ComponentName({ props }) {
+  // Component implementation
+}
+```
+
+## State Management Rules
+
+### useState Patterns:
+- **Use descriptive state names:** `isLoading`, `showModal`, `localRoomName`
+- **Initialize with proper types:** `useState("")` for strings, `useState(false)` for booleans
+- **Group related state when logical:**
+```javascript
+const [formData, setFormData] = useState({
+  username: "",
+  roomName: "",
+  isValid: false
+});
+```
+
+### useEffect Guidelines:
+- **Always include dependency array**
+- **Clean up subscriptions and timers:**
+```javascript
+useEffect(() => {
+  const unsubscribe = subscribeToRoom(roomId, handleRoomUpdate);
+  return () => unsubscribe();
+}, [roomId]);
+```
+- **Use early returns for conditional effects:**
+```javascript
+useEffect(() => {
+  if (!isVisible) return;
+  // Effect logic
+}, [isVisible]);
+```
+
+### Custom Hooks Usage:
+- **Extract reusable logic into custom hooks**
+- **Use provided hooks:** `useClickOutside`, `useMobile`, `useRoom`
+- **Hook naming:** Start with `use` prefix
+
+## Props and Data Flow
+
+### Props Destructuring:
+```javascript
+// ✅ Good - Destructure in parameter
+export default function PlayerCard({ player, isActive, onCardClick }) {
+
+// ❌ Bad - Destructure inside component
+export default function PlayerCard(props) {
+  const { player, isActive, onCardClick } = props;
+```
+
+### Props Validation:
+- **Use TypeScript-style JSDoc for complex props:**
+```javascript
+/**
+ * @param {Object} player - Player object
+ * @param {string} player.userId - Unique user ID
+ * @param {string} player.username - Display name
+ * @param {number|null} player.point - Selected point value
+ */
+```
+
+### Event Handlers:
+- **Prefix with `handle`:** `handleSubmit`, `handleCardClick`, `handleModalClose`
+- **Use arrow functions for inline handlers only when necessary**
+- **Extract complex logic to separate functions:**
+```javascript
+const handleCardClick = (cardValue) => {
+  if (!isVotingActive) return;
+  updateParticipantPoint(cardValue);
+  onCardSelect?.(cardValue);
+};
+```
+
+## Context Usage Patterns
+
+### Room Context:
+- **Import:** `import { useRoom } from "@/app/rooms/[hashId]/context/RoomContext";`
+- **Usage:** `const { roomName, participants, status, isRoomCreator } = useRoom();`
+- **Don't destructure unused values**
+
+### Context Value Updates:
+- **Use context methods, not direct Firebase calls in components**
+- **Example:** Use `updateRoomName()` from context instead of direct Firebase action
+
+## Component Lifecycle Patterns
+
+### Loading States:
+- **Always handle loading states in data-dependent components**
+- **Use consistent loading patterns:**
+```javascript
+if (isLoading) {
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    </div>
+  );
+}
+```
+
+### Error Handling:
+- **Handle error states gracefully**
+- **Show user-friendly error messages**
+- **Use try-catch for async operations**
+
+## Performance Optimization
+
+### React.memo Usage:
+- **Use for expensive re-renders**
+- **Memoize child components that receive object props**
+
+### useCallback and useMemo:
+- **useCallback for functions passed as props**
+- **useMemo for expensive calculations**
+- **Don't overuse - profile first**
+
+### Debouncing:
+- **Use lodash debounce for user input:**
+```javascript
+const debouncedUpdateName = useCallback(
+  debounce((name) => {
+    updateRoomName(name);
+  }, 400),
+  [updateRoomName]
+);
+```
+
+## UI Component Patterns
+
+### Conditional Rendering:
+```javascript
+// ✅ Good - Early returns for complex conditions
+if (!user) {
+  return <LoginPrompt />;
+}
+
+if (isLoading) {
+  return <LoadingSpinner />;
+}
+
+// ✅ Good - Short conditional rendering
+{isVisible && <Modal />}
+{count > 0 ? <ItemList items={items} /> : <EmptyState />}
+```
+
+### Dynamic Styling:
+```javascript
+// ✅ Good - Use style prop for dynamic values
+<div 
+  style={{ 
+    backgroundColor: COLORS.blue500,
+    borderColor: COLORS.blue600 
+  }}
+  className="w-12 h-16 border-2 shadow-lg"
+>
+
+// ❌ Bad - Don't use inline styles for static values
+<div style={{ width: '48px', height: '64px', border: '2px solid' }}>
+```
+
+### Component Composition:
+- **Prefer composition over inheritance**
+- **Use children prop for flexible layouts**
+- **Create wrapper components for common patterns**
+
+## Accessibility Rules
+
+### Semantic HTML:
+- **Use proper HTML elements:** `<button>` for actions, `<input>` for form fields
+- **Include ARIA labels when necessary**
+- **Ensure keyboard navigation works**
+
+### Focus Management:
+- **Manage focus for modals and dynamic content**
+- **Use `tabIndex` appropriately**
+- **Test with keyboard-only navigation** 

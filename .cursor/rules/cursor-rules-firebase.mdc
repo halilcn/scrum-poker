@@ -1,0 +1,124 @@
+---
+description: Essential for Firebase operations that interact with browser storage. It is also useful if a Firebase Realtime Database schema is required.
+globs: 
+alwaysApply: false
+---
+# 🔥 FIREBASE VE VERİ YÖNETİMİ KURALLARI - Scrum Poker Project
+
+## Firebase Yapısı (docs/room-schema.md'ye göre)
+
+### Room Schema Structure:
+```
+rooms/
+├── {roomId}/
+│   ├── createdAt: timestamp
+│   ├── createdBy: string (userId)
+│   ├── participants/
+│   │   ├── {userId}/
+│   │   │   ├── userId: string
+│   │   │   ├── point: number | null
+│   │   │   ├── isActive: boolean
+│   │   │   ├── username: string
+│   │   │   ├── breakStatus: 'none' | 'Indefinite' | 'time'
+│   │   │   └── breakSeconds: number
+│   ├── reactions/
+│   │   ├── {reactionId}/
+│   │   │   ├── userId: string
+│   │   │   ├── reaction: string (emoji)
+│   │   │   └── timestamp: timestamp
+│   ├── roomName: string
+│   └── status: "voting" | "completed" | "waiting"
+```
+
+## Firebase Action Guidelines
+
+### File Organization:
+- **Setup:** `/src/lib/firebase/setup.js` - Firebase configuration only
+- **Actions:** `/src/lib/firebase/actions.js` - ALL database operations
+- **Rule:** NO direct Firebase imports outside `/src/lib/firebase/`
+
+### Function Naming Conventions:
+- **Create:** `createRoom`, `createParticipant`
+- **Update:** `updateRoomStatus`, `updateParticipantPoint`, `updateParticipantUsername`
+- **Get/Check:** `checkRoomExists`, `checkUserIsParticipant`
+- **Subscribe:** `subscribeToRoom`, `subscribeToReactions`
+- **Unsubscribe:** `unsubscribeFromRoom`
+- **Utility:** `loginAnonymously`, `logoutFromRoom`, `resetRoomForNewVoting`
+
+### Data Type Rules:
+- **userId:** Always string from `getUserIdCookie()`
+- **roomId:** Always string from `getRoomIdCookie()`
+- **point:** number | null (never undefined)
+- **isActive:** boolean (default: true)
+- **breakStatus:** 'none' | 'Indefinite' | 'time' (default: 'none')
+- **breakSeconds:** number (default: 0)
+- **status:** "voting" | "completed" | "waiting"
+- **timestamps:** Use `serverTimestamp()` for consistency
+
+### Cookie Integration Rules:
+- **ALWAYS use cookie functions from `@/utils/cookieActions`**
+- **getUserIdCookie()** - for current user operations
+- **getRoomIdCookie()** - for current room operations
+- **getUsernameCookie()** - for username operations
+- **Don't pass userId/roomId as parameters if they can be retrieved from cookies**
+
+### Error Handling:
+- **All Firebase functions should handle errors gracefully**
+- **Return early if required cookies are missing**
+- **Use try-catch blocks for critical operations**
+- **Log errors with descriptive messages**
+
+### Subscription Management:
+- **Always return unsubscribe function from subscription methods**
+- **Clean up subscriptions in useEffect cleanup**
+- **Use `{ onlyOnce: true }` for one-time reads**
+- **Example pattern:**
+```javascript
+useEffect(() => {
+  const unsubscribe = subscribeToRoom(roomId, (snapshot) => {
+    // Handle data
+  });
+  return () => unsubscribe();
+}, [roomId]);
+```
+
+### Performance Rules:
+- **Use specific paths instead of broad queries**
+- **Batch updates when updating multiple fields**
+- **Clean up old data (e.g., reactions older than 5 seconds)**
+- **Use `update()` instead of multiple `set()` calls**
+
+### Security Rules:
+- **Never trust client-side data**
+- **Always validate user permissions before operations**
+- **Check `isRoomCreator` for admin operations**
+- **Verify user participation before allowing actions**
+
+## Data Validation Patterns:
+
+### Before Firebase Operations:
+```javascript
+export async function updateParticipantPoint(point) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return; // Early return pattern
+  
+  // Validate point type
+  if (point !== null && typeof point !== 'number') return;
+  
+  const pointRef = dbRef(db, `rooms/${roomId}/participants/${userId}/point`);
+  await set(pointRef, point);
+}
+```
+
+### Participant Object Creation:
+```javascript
+const getRoomParticipant = ({ userId, username = "" }) => ({
+  userId,
+  username,
+  point: null,
+  isActive: true,
+  breakStatus: 'none',
+  breakSeconds: 0,
+});
+``` 
