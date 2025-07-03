@@ -21,7 +21,6 @@ apiClient.interceptors.request.use(
     //   config.headers.Authorization = `Bearer ${token}`
     // }
     
-    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`)
     return config
   },
   (error) => {
@@ -35,7 +34,6 @@ apiClient.interceptors.response.use(
   (response) => {
     // Calculate request duration
     const duration = new Date() - response.config.metadata.startTime
-    console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url} (${duration}ms)`)
     
     return response
   },

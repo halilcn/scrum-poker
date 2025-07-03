@@ -33,7 +33,6 @@ const withRedirectPage = (WrappedComponent) => {
               ? window.location.pathname.split("/")[2]
               : null;
 
-            console.log("roomIdFromUrl", roomIdFromUrl);
 
             isRoomUrl
               ? router.push(`/login?roomId=${roomIdFromUrl}`)

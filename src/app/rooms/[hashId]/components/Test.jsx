@@ -171,7 +171,6 @@ const Test = () => {
           (pair.bodyB === emoji && pair.bodyA.label === `user-${targetUserId}`)
         ) {
           // User'a çarptı! Burada özel efekt ekleyebiliriz
-          console.log(`Emoji hit user ${targetUserId}!`);
         }
 
         // Zemine çarptığında fade out başlat

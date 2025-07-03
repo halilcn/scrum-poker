@@ -163,7 +163,6 @@ const ScrumRoomWithKickDetection = () => {
 
     // Eğer kullanıcı artık participants listesinde yoksa
     if (!participants[userId]) {
-      console.log("participants", participants);
       // Cookie'den room ID'yi sil
       removeRoomIdCookie();
 

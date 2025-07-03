@@ -173,7 +173,6 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
   };
 
   const handleOnReactionClick = (emojiData) => {
-    console.log("emojiData", emojiData);
     handleThrowEmoji(emojiData.emoji);
   };
 

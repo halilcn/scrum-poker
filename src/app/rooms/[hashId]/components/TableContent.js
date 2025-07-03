@@ -180,7 +180,6 @@ const CompletedContent = ({
   }
 
   // Calculate average from participants with numeric points
-  console.log("participants", participants);
   const { average } = calculateAverage(participants);
 
   const handleStartAgain = async () => {
