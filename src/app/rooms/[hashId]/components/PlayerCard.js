@@ -13,6 +13,7 @@ import { MoreVertical, Coffee } from "lucide-react";
 import UserActionsDialog from "./UserActionsDialog";
 import CardTooltip from "@/components/CardTooltip";
 import { calculateAverage, shouldShowTooltip } from "@/utils/calculateAverage";
+import { DEFAULT_AVATAR_URL } from "@/lib/firebase/actions";
 
 import "./PlayerCard.css";
 
@@ -29,11 +30,11 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
   // Tooltip hesaplamalarını optimize et
   const tooltipData = useMemo(() => {
     if (!participants || !player.point) {
-      return { 
-        roundedAverage: null, 
-        shouldShow: false, 
-        isLower: false, 
-        isHigher: false 
+      return {
+        roundedAverage: null,
+        shouldShow: false,
+        isLower: false,
+        isHigher: false,
       };
     }
 
@@ -44,7 +45,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
       roundedAverage,
       shouldShow: tooltipConfig.shouldShow,
       isLower: tooltipConfig.isLower,
-      isHigher: tooltipConfig.isHigher
+      isHigher: tooltipConfig.isHigher,
     };
   }, [participants, player.point]);
 
@@ -66,7 +67,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
       // 5 saniye bekle ve kartları göster
       const timer = setTimeout(() => {
         setShowRevealedCard(true);
-        
+
         // Kartlar açıldıktan sonra tooltip kontrolü yap
         checkAndShowTooltip();
       }, TIMING.CARD_REVEAL_DELAY);
@@ -91,7 +92,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
 
   // Tooltip kontrolü yap - tüm oyuncular için
   const checkAndShowTooltip = () => {
-    // Herhangi bir oyuncunun puanı ortalamadan farklıysa, 
+    // Herhangi bir oyuncunun puanı ortalamadan farklıysa,
     // o oyuncunun kartında tooltip göster (tüm oyunculara görünür)
     if (tooltipData.shouldShow) {
       setShouldShowDiffTooltip(true);
@@ -227,8 +228,13 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
         )}
 
         {/* Kullanıcı İsmi */}
-        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-[110px]">
-          <div className="flex items-center justify-center gap-1">
+        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-[130px]">
+          <div className="flex items-center justify-center gap-2">
+            <img
+              src={player.imageUrl || DEFAULT_AVATAR_URL}
+              alt={`${player.username} avatar`}
+              className="w-6 h-6 rounded-full flex-shrink-0 border-1 border-white shadow-md ring-1 ring-gray-200 hover:shadow-lg transition-shadow duration-200"
+            />
             <p
               className="text-sm font-medium truncate"
               style={{ color: COLORS.gray800 }}

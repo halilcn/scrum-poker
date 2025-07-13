@@ -10,15 +10,37 @@ import {
   getUsernameCookie,
 } from "@/utils/cookieActions";
 
+// Avatar URLs for random selection
+const AVATAR_URLS = [
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Chase",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Kimberly",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Christian",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Eliza",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Leah",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Sawyer",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Jack",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Eden",
+  "https://api.dicebear.com/9.x/avataaars/svg?seed=Katherine",
+];
+
+// Default avatar URL (Katherine)
+export const DEFAULT_AVATAR_URL = "https://api.dicebear.com/9.x/avataaars/svg?seed=Katherine";
+
+// Function to get random avatar URL
+const getRandomAvatarUrl = () => {
+  return AVATAR_URLS[Math.floor(Math.random() * AVATAR_URLS.length)];
+};
+
 export async function loginAnonymously() {
   const result = await signInAnonymously(auth);
   return result.user;
 }
 
 // Tek bir participant objesi döndürür
-const getRoomParticipant = ({ userId, username = "" }) => ({
+const getRoomParticipant = ({ userId, username = "", imageUrl = null }) => ({
   userId,
   username,
+  imageUrl: imageUrl || getRandomAvatarUrl(),
   point: null,
   isActive: true,
   breakStatus: 'none',

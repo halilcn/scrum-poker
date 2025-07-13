@@ -10,6 +10,7 @@ rooms/
 │ │ │ ├── point: number | null
 │ │ │ ├── isActive: boolean
 │ │ │ ├── username: string
+│ │ │ ├── imageUrl: string
 │ │ │ ├── breakStatus: 'none' | 'Indefinite' | 'time'
 │ │ │ └── breakSeconds: number
 │ ├── reactions/
@@ -31,13 +32,15 @@ Example Data:
 "userId": "user456",
 "point": 5,
 "isActive": true,
-"username": "John"
+"username": "John",
+"imageUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=Jack"
 },
 "user789": {
 "userId": "user789",
 "point": null,
 "isActive": true,
-"username": "Jane"
+"username": "Jane",
+"imageUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=Eliza"
 }
 },
 "roomName": "Sprint Planning",
