@@ -156,7 +156,8 @@ const CompletedContent = ({
   onCountdownComplete,
   mounted,
 }) => {
-  // Countdown gösteriliyorsa, countdown component'ini göster
+  const lottieRef = useRef();
+
   if (showCountdown) {
     return (
       <motion.div
@@ -168,12 +169,18 @@ const CompletedContent = ({
         key="countdown"
       >
         <Lottie
+          lottieRef={lottieRef}
           animationData={null}
           path="/lottie/countdown.json"
           loop={false}
           autoplay
           style={{ width: 100, height: 100 }}
           onComplete={onCountdownComplete}
+          onDOMLoaded={() => {
+            if (lottieRef.current) {
+              lottieRef.current.setSpeed(1.6);
+            }
+          }}
         />
       </motion.div>
     );
