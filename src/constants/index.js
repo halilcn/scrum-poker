@@ -21,3 +21,9 @@ export const VOTING_CARDS = {
 };
 
 export const cardValues = ["1", "2", "3", "5", "8", "13", "21"];
+
+// Timing constants
+export const TIMING = {
+  CARD_REVEAL_DELAY: 3125,
+  CONFETTI_DURATION: 3125,
+};

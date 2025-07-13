@@ -2,6 +2,7 @@
 
 import { COLORS } from "@/constants";
 import TableContent from "@/app/rooms/[hashId]/components/TableContent";
+import ConfettiCelebration from "./ConfettiCelebration";
 
 export default function PokerTable() {
   return (
@@ -19,6 +20,9 @@ export default function PokerTable() {
           className="absolute inset-2 rounded-[34px] border-2"
           style={{ borderColor: `${COLORS.gray300}50` }}
         ></div>
+
+        {/* Konfeti - sadece table içinde */}
+        <ConfettiCelebration />
 
         {/* Masa içi content alanı */}
         <TableContent />

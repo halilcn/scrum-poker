@@ -1,7 +1,7 @@
 "use client";
 
 import PlayingCard from "./PlayingCard";
-import { COLORS } from "@/constants";
+import { COLORS, TIMING } from "@/constants";
 import { useRoom } from "@/app/rooms/[hashId]/context/RoomContext";
 import { Card } from "@/components/ui/card";
 import { forwardRef, useState, useRef, useEffect, useMemo } from "react";
@@ -69,7 +69,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
         
         // Kartlar açıldıktan sonra tooltip kontrolü yap
         checkAndShowTooltip();
-      }, 5000);
+      }, TIMING.CARD_REVEAL_DELAY);
 
       return () => clearTimeout(timer);
     }
