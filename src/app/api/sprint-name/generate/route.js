@@ -18,19 +18,26 @@ export async function POST(request) {
     }
 
     // Check for Gemini API key
-    if (!process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY) {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
         { error: "Gemini API key is not configured" },
         { status: 500 }
       );
     }
 
+    // Set API key as environment variable for @ai-sdk/google
+    // The package checks GOOGLE_GENERATIVE_AI_API_KEY by default
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
+
     // Prepare the prompt with user text
     const prompt = SPRINT_NAME_GENERATION_PROMPT.replace("{userText}", text);
 
     // Generate sprint names using Gemini AI
     const { text: aiResponse } = await generateText({
-      model: google("gemini-1.5-flash"),
+      model: google("gemini-1.5-flash-latest", {
+        apiKey: apiKey,
+      }),
       prompt: prompt,
       maxTokens: 500,
       temperature: 0.8, // Higher creativity
