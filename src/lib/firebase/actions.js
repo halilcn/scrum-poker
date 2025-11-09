@@ -1,8 +1,9 @@
 import { signInAnonymously } from "firebase/auth";
-import { auth } from "@/lib/firebase/setup";
+import { auth, storage } from "@/lib/firebase/setup";
 import { db } from "@/lib/firebase/setup";
 import { ref, push, serverTimestamp, set, onValue, off, update } from "firebase/database";
 import { remove as firebaseRemove, ref as dbRef } from "firebase/database";
+import { ref as storageRef, uploadString, getDownloadURL } from "firebase/storage";
 import {
   getUserIdCookie,
   getRoomIdCookie,
@@ -11,7 +12,7 @@ import {
 } from "@/utils/cookieActions";
 
 // Avatar URLs for random selection
-const AVATAR_URLS = [
+export const AVATAR_URLS = [
   "https://api.dicebear.com/9.x/avataaars/svg?seed=Chase",
   "https://api.dicebear.com/9.x/avataaars/svg?seed=Kimberly",
   "https://api.dicebear.com/9.x/avataaars/svg?seed=Christian",
@@ -105,6 +106,15 @@ export async function updateParticipantUsername(newUsername) {
   if (!roomId || !userId) return;
   const usernameRef = dbRef(db, `rooms/${roomId}/participants/${userId}/username`);
   await set(usernameRef, newUsername);
+}
+
+// Katılımcının avatar bilgisini günceller
+export async function updateParticipantAvatar(newAvatarUrl) {
+  const roomId = getRoomIdCookie();
+  const userId = getUserIdCookie();
+  if (!roomId || !userId) return;
+  const avatarRef = dbRef(db, `rooms/${roomId}/participants/${userId}/imageUrl`);
+  await set(avatarRef, newAvatarUrl);
 }
 
 // Room bilgilerini dinlemek için subscription oluştur
@@ -285,6 +295,34 @@ export async function updateParticipantBreakSeconds(seconds) {
   
   const breakSecondsRef = dbRef(db, `rooms/${roomId}/participants/${userId}/breakSeconds`);
   await set(breakSecondsRef, seconds);
+}
+
+/**
+ * Upload base64 image to Firebase Storage and return the download URL
+ * @param {string} base64String - Base64 encoded image string
+ * @param {string} userId - User ID for unique filename
+ * @returns {Promise<string>} Download URL of the uploaded image
+ */
+export async function uploadBase64ImageToStorage(base64String, userId) {
+  try {
+    // Generate unique filename with timestamp
+    const timestamp = Date.now();
+    const filename = `avatars/${userId}_${timestamp}.png`;
+    
+    // Create storage reference
+    const imageRef = storageRef(storage, filename);
+    
+    // Upload base64 string to Firebase Storage
+    await uploadString(imageRef, base64String, 'base64');
+    
+    // Get download URL
+    const downloadURL = await getDownloadURL(imageRef);
+    
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading image to Firebase Storage:", error);
+    throw error;
+  }
 }
 
 

@@ -18,7 +18,7 @@ export async function POST(request) {
     }
 
     // Check for Gemini API key
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    if (!process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY) {
       return NextResponse.json(
         { error: "Gemini API key is not configured" },
         { status: 500 }

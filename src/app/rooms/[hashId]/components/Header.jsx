@@ -7,13 +7,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, LogOut, User } from "lucide-react";
-import { logoutFromRoom } from "@/lib/firebase/actions";
+import { Copy, LogOut, User, UserCircle2 } from "lucide-react";
+import { logoutFromRoom, updateParticipantUsername, updateParticipantAvatar } from "@/lib/firebase/actions";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { setUsernameCookie } from "@/utils/cookieActions";
-import { updateParticipantUsername } from "@/lib/firebase/actions";
+import { setUsernameCookie, getUserIdCookie } from "@/utils/cookieActions";
+import { generateAIAvatar } from "@/utils/avatarActions";
 import ChangeUsernameDialog from "./ChangeUsernameDialog";
+import ChangeAvatarDialog from "@/components/ChangeAvatarDialog";
 import { useRoom } from "../context/RoomContext";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,11 +22,14 @@ import Link from "next/link";
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+  const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [usernameLoading, setUsernameLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   const { currentUser } = useRoom();
   const username = currentUser?.username || "";
+  const avatarUrl = currentUser?.imageUrl || "";
 
   const handleCopyLink = async () => {
     try {
@@ -49,11 +53,43 @@ export default function Header() {
       setUsernameCookie(newUsername);
       await updateParticipantUsername(newUsername);
       toast.success("Username updated!");
-      setDialogOpen(false);
+      setUsernameDialogOpen(false);
     } catch (err) {
       toast.error("Failed to update username");
     } finally {
       setUsernameLoading(false);
+    }
+  };
+
+  const handleAvatarSubmit = async (newAvatarUrl) => {
+    setAvatarLoading(true);
+    try {
+      await updateParticipantAvatar(newAvatarUrl);
+      toast.success("Avatar updated!");
+      setAvatarDialogOpen(false);
+    } catch (err) {
+      toast.error("Failed to update avatar");
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
+  const handleAIAvatarGenerate = async (customPrompt) => {
+    try {
+      const userId = getUserIdCookie();
+      if (!userId) {
+        toast.error("User ID not found");
+        throw new Error("User ID not found");
+      }
+
+      // Generate AI avatar using Gemini and upload to Firebase Storage
+      const avatarUrl = await generateAIAvatar(userId, customPrompt);
+      
+      return avatarUrl;
+    } catch (error) {
+      console.error("AI avatar generation failed:", error);
+      toast.error("Failed to generate AI avatar");
+      throw error;
     }
   };
 
@@ -126,11 +162,21 @@ export default function Header() {
                 onSelect={(e) => {
                   e.preventDefault();
                   setDropdownOpen(false);
-                  setDialogOpen(true);
+                  setUsernameDialogOpen(true);
                 }}
               >
                 <User className="mr-2 h-4 w-4" />
                 Change Username
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDropdownOpen(false);
+                  setAvatarDialogOpen(true);
+                }}
+              >
+                <UserCircle2 className="mr-2 h-4 w-4" />
+                Change Avatar
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -170,10 +216,20 @@ export default function Header() {
 
           {/* Change Username Dialog */}
           <ChangeUsernameDialog
-            open={dialogOpen}
-            setOpen={setDialogOpen}
+            open={usernameDialogOpen}
+            setOpen={setUsernameDialogOpen}
             usernameLoading={usernameLoading}
             handleUsernameSubmit={handleUsernameSubmit}
+          />
+
+          {/* Change Avatar Dialog */}
+          <ChangeAvatarDialog
+            open={avatarDialogOpen}
+            setOpen={setAvatarDialogOpen}
+            avatarLoading={avatarLoading}
+            handleAvatarSubmit={handleAvatarSubmit}
+            currentAvatarUrl={avatarUrl}
+            onAIGenerate={handleAIAvatarGenerate}
           />
         </div>
       </div>

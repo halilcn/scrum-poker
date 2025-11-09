@@ -25,6 +25,10 @@ import {
 } from "@/utils/cookieActions";
 import Test from "./components/Test";
 import BreakButton from "./components/BreakButton";
+import ChangeAvatarDialog from "@/components/ChangeAvatarDialog";
+import { updateParticipantAvatar } from "@/lib/firebase/actions";
+import { generateAIAvatar } from "@/utils/avatarActions";
+import { toast } from "sonner";
 
 const ScrumRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -152,10 +156,12 @@ const ScrumRoom = () => {
 // Inner component that uses useRoom hook
 const ScrumRoomWithKickDetection = () => {
   const router = useRouter();
-  const { participants } = useRoom();
+  const { participants, currentUser } = useRoom();
   const userId = getUserIdCookie();
 
   const [mounted, setMounted] = useState(false);
+  const [welcomeAvatarDialogOpen, setWelcomeAvatarDialogOpen] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
 
   // Kullanıcının room'dan atılıp atılmadığını kontrol et
   useEffect(() => {
@@ -177,6 +183,65 @@ const ScrumRoomWithKickDetection = () => {
     }, 1000);
   }, []);
 
+  // Odaya ilk girişte avatar seçim dialog'unu göster
+  useEffect(() => {
+    if (!mounted || !userId) return;
+
+    // localStorage'dan kullanıcının daha önce bu dialog'u görüp görmediğini kontrol et
+    const hasSeenWelcomeDialog = localStorage.getItem(
+      `avatar_welcome_shown_${userId}`
+    );
+
+    if (!hasSeenWelcomeDialog) {
+      // Dialog'u göster
+      setWelcomeAvatarDialogOpen(true);
+    }
+  }, [mounted, userId]);
+
+  const handleWelcomeAvatarSubmit = async (avatarUrl) => {
+    setAvatarLoading(true);
+    try {
+      await updateParticipantAvatar(avatarUrl);
+      toast.success("Avatar set successfully!");
+      
+      // localStorage'a kullanıcının dialog'u gördüğünü kaydet
+      localStorage.setItem(`avatar_welcome_shown_${userId}`, "true");
+      
+      setWelcomeAvatarDialogOpen(false);
+    } catch (err) {
+      toast.error("Failed to set avatar");
+      console.error("Avatar update error:", err);
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
+
+  const handleWelcomeDialogClose = (open) => {
+    if (!open && welcomeAvatarDialogOpen) {
+      // Kullanıcı Skip'e bastı veya dialog'u kapattı
+      localStorage.setItem(`avatar_welcome_shown_${userId}`, "true");
+    }
+    setWelcomeAvatarDialogOpen(open);
+  };
+
+  const handleAIAvatarGenerate = async (customPrompt) => {
+    try {
+      if (!userId) {
+        toast.error("User ID not found");
+        throw new Error("User ID not found");
+      }
+
+      // Generate AI avatar using Gemini and upload to Firebase Storage
+      const avatarUrl = await generateAIAvatar(userId, customPrompt);
+      
+      return avatarUrl;
+    } catch (error) {
+      console.error("AI avatar generation failed:", error);
+      toast.error("Failed to generate AI avatar");
+      throw error;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
       <Header />
@@ -197,6 +262,20 @@ const ScrumRoomWithKickDetection = () => {
 
       {/* Voting Cards - Fixed bottom */}
       <VotingCards />
+
+      {/* Welcome Avatar Dialog */}
+      <ChangeAvatarDialog
+        open={welcomeAvatarDialogOpen}
+        setOpen={handleWelcomeDialogClose}
+        avatarLoading={avatarLoading}
+        handleAvatarSubmit={handleWelcomeAvatarSubmit}
+        currentAvatarUrl={currentUser?.imageUrl || ""}
+        onAIGenerate={handleAIAvatarGenerate}
+        title="Customize Your Avatar Before Starting"
+        description="Choose an avatar that represents you in the room:"
+        showCancelButton={true}
+        variant="welcome"
+      />
     </div>
   );
 };
