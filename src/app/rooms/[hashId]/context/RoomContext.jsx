@@ -75,6 +75,7 @@ export function RoomProvider({ children }) {
     participants: room?.participants || {},
     roomName: room?.roomName || "",
     status: room?.status || "voting",
+    raffle: room?.raffle || null,
     updateRoomName,
   };
 

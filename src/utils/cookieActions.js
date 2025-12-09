@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { COOKIE_USERNAME, COOKIE_USERID, COOKIE_EXPIRE_DAYS, COOKIE_ROOMID } from "@/constants/cookie";
+import { COOKIE_USERNAME, COOKIE_USERID, COOKIE_EXPIRE_DAYS, COOKIE_ROOMID, COOKIE_RAFFLE_SEEN } from "@/constants/cookie";
 
 export function setUsernameCookie(username) {
   Cookies.set(COOKIE_USERNAME, username, { expires: COOKIE_EXPIRE_DAYS });
@@ -27,4 +27,12 @@ export function getRoomIdCookie() {
 
 export function removeRoomIdCookie() {
   Cookies.remove(COOKIE_ROOMID);
+}
+
+export function setRaffleSeenCookie() {
+  Cookies.set(COOKIE_RAFFLE_SEEN, "true", { expires: COOKIE_EXPIRE_DAYS });
+}
+
+export function getRaffleSeenCookie() {
+  return Cookies.get(COOKIE_RAFFLE_SEEN);
 } 

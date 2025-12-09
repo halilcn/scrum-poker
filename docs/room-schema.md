@@ -18,6 +18,14 @@ rooms/
 │ │ │ ├── userId: string
 │ │ │ ├── reaction: string
 │ │ │ └── timestamp: timestamp
+│ ├── raffle/
+│ │ ├── type: string ("single-selection")
+│ │ ├── participants/
+│ │ │ ├── {userId}/ (aktif kullanıcılar için userId kullanılır)
+│ │ │ │ └── userId: string
+│ │ │ └── {manualId}/ (manuel eklenenler için unique ID)
+│ │ │   └── name: string
+│ │ └── status: "pending" | "completed"
 │ ├── roomName: string
 │ └── status: "voting" | "completed" | "waiting"
 
@@ -44,7 +52,22 @@ Example Data:
 }
 },
 "roomName": "Sprint Planning",
-"status": "voting"
+"status": "voting",
+"raffle": {
+  "type": "single-selection",
+  "status": "pending",
+  "participants": {
+    "user456": {
+      "userId": "user456"
+    },
+    "user789": {
+      "userId": "user789"
+    },
+    "manual-123": {
+      "name": "External User"
+    }
+  }
+}
 }
 }
 }

@@ -325,4 +325,82 @@ export async function uploadBase64ImageToStorage(base64String, userId) {
   }
 }
 
+// Raffle Functions
+
+// Raffle type'ını set eder
+export async function setRaffleType(type) {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  const typeRef = dbRef(db, `rooms/${roomId}/raffle/type`);
+  await set(typeRef, type);
+}
+
+// Raffle'a aktif kullanıcı ekler
+export async function addRaffleParticipant(userId) {
+  const roomId = getRoomIdCookie();
+  if (!roomId || !userId) return;
+  const participantRef = dbRef(db, `rooms/${roomId}/raffle/participants/${userId}`);
+  await set(participantRef, { userId });
+}
+
+// Raffle'a manuel kullanıcı ekler
+export async function addRaffleManualParticipant(manualId, name) {
+  const roomId = getRoomIdCookie();
+  if (!roomId || !manualId || !name) return;
+  const participantRef = dbRef(db, `rooms/${roomId}/raffle/participants/${manualId}`);
+  await set(participantRef, { name });
+}
+
+// Raffle'dan participant çıkarır
+export async function removeRaffleParticipant(participantId) {
+  const roomId = getRoomIdCookie();
+  if (!roomId || !participantId) return;
+  const participantRef = dbRef(db, `rooms/${roomId}/raffle/participants/${participantId}`);
+  await firebaseRemove(participantRef);
+}
+
+// Raffle'ı başlatır (status'ı "pending" yapar)
+export async function startRaffle() {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  const statusRef = dbRef(db, `rooms/${roomId}/raffle/status`);
+  await set(statusRef, "pending");
+}
+
+// Raffle'ı tamamlar ve winner'ı set eder
+export async function completeRaffle(winner) {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  
+  const updates = {
+    [`raffle/status`]: "completed",
+    [`raffle/winner`]: winner
+  };
+  
+  const roomRef = dbRef(db, `rooms/${roomId}`);
+  await update(roomRef, updates);
+}
+
+// Raffle'ı resetler (tüm raffle verilerini temizler)
+export async function resetRaffle() {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  const raffleRef = dbRef(db, `rooms/${roomId}/raffle`);
+  await firebaseRemove(raffleRef);
+}
+
+// Raffle'ı yeni çekiliş için hazırlar (sadece status ve winner'ı temizler, participants ve type korunur)
+export async function resetRaffleForNewDraw() {
+  const roomId = getRoomIdCookie();
+  if (!roomId) return;
+  
+  const updates = {
+    [`raffle/status`]: null,
+    [`raffle/winner`]: null
+  };
+  
+  const roomRef = dbRef(db, `rooms/${roomId}`);
+  await update(roomRef, updates);
+}
+
 
