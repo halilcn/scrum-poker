@@ -108,8 +108,8 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
         <Card
           className="w-12 h-16 border-2 shadow-lg flex items-center justify-center"
           style={{
-            backgroundColor: COLORS.blue500,
-            borderColor: COLORS.blue600,
+            backgroundColor: COLORS.darkNavy,
+            borderColor: COLORS.primaryBlue,
           }}
         >
           <div
@@ -128,8 +128,8 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
           <Card
             className="w-12 h-16 border-2 shadow-lg flex items-center justify-center"
             style={{
-              backgroundColor: COLORS.blue500,
-              borderColor: COLORS.blue600,
+              backgroundColor: COLORS.darkNavy,
+              borderColor: COLORS.primaryBlue,
             }}
           >
             <div
@@ -245,7 +245,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
             {player.breakStatus && player.breakStatus !== "none" && (
               <Coffee
                 className="w-4 h-4 flex-shrink-0"
-                style={{ color: COLORS["stori-poi"] }}
+                style={{ color: COLORS.primaryBlue }}
               />
             )}
           </div>

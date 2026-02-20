@@ -29,7 +29,7 @@ export default function PlayingCard({ isRevealed = false, value = '?' }) {
         <Card 
           className="w-12 h-16 border-2 shadow-lg flex items-center justify-center"
           style={{
-            backgroundColor: COLORS.white,
+            backgroundColor: COLORS.snow,
             borderColor: COLORS.gray300
           }}
         >

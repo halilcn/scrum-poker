@@ -94,7 +94,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full border-b bg-white px-6 py-2">
+    <header className="w-full border-b bg-[#F9F7F7] px-6 py-2">
       <div className="flex items-center justify-between mx-auto max-w-6xl w-full">
         {/* Sol taraf - Logo */}
         <div className="flex flex-col items-start">

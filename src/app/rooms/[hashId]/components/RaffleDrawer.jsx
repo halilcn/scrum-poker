@@ -214,7 +214,7 @@ const RaffleDrawer = ({ open, onOpenChange }) => {
 
         {/* Countdown Overlay */}
         {raffleStatus === "pending" && (
-          <div className="absolute top-[73px] left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-white">
+          <div className="absolute top-[73px] left-0 right-0 bottom-0 z-50 flex items-center justify-center bg-[#F9F7F7]">
             <Lottie
               lottieRef={lottieRef}
               animationData={null}
@@ -233,7 +233,7 @@ const RaffleDrawer = ({ open, onOpenChange }) => {
 
         {/* Result Overlay */}
         {raffleStatus === "completed" && winner && (
-          <div className="absolute top-[73px] left-0 right-0 bottom-0 z-50 flex flex-col bg-white">
+          <div className="absolute top-[73px] left-0 right-0 bottom-0 z-50 flex flex-col bg-[#F9F7F7]">
             <style jsx>{`
               @keyframes fadeIn {
                 from {
@@ -283,7 +283,7 @@ const RaffleDrawer = ({ open, onOpenChange }) => {
             <div className="px-4 pb-6 pt-4 border-t border-gray-100">
               <button
                 onClick={handleResetRaffle}
-                className="w-full h-12 rounded-lg bg-blue-600 text-white font-medium text-base hover:bg-blue-700 transition-colors duration-200"
+                className="w-full h-12 rounded-lg bg-[#3F72AF] text-white font-medium text-base hover:bg-[#3F72AF]/90 transition-colors duration-200"
                 style={{
                   animation: "fadeIn 1s ease-in-out",
                 }}
@@ -308,8 +308,8 @@ const RaffleDrawer = ({ open, onOpenChange }) => {
                     transition-all hover:scale-105 hover:shadow-md flex items-center gap-2
                     ${
                       raffleType === type.id
-                        ? "border-blue-500 ring-2 ring-blue-200 bg-blue-50"
-                        : "border-gray-200 hover:border-blue-300 bg-white"
+                        ? "border-[#3F72AF] ring-2 ring-[#3F72AF]/30 bg-[#DBE2EF]/30"
+                        : "border-gray-200 hover:border-[#3F72AF] bg-white"
                     }
                   `}
                 >

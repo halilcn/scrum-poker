@@ -133,7 +133,7 @@ const BreakButton = () => {
             hover:shadow-xl transition-all duration-200 border cursor-pointer justify-center p-3 hover:bg-gray-50
             ${
               isOnBreak
-                ? "text-white border-[#286ddb] w-24"
+                ? "text-white border-[#112D4E] w-24"
                 : "bg-white border-gray-200"
             }
             ${
@@ -143,7 +143,7 @@ const BreakButton = () => {
             }
           `}
           style={{
-            backgroundColor: isOnBreak && !isHovered ? "#286ddb" : undefined,
+            backgroundColor: isOnBreak && !isHovered ? "#112D4E" : undefined,
           }}
         >
           {isOnBreak && isHovered ? (

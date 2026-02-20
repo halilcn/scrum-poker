@@ -9,7 +9,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'stori-poi': '#286ddb',
+        'primary-blue': '#3F72AF',
+        'dark-navy': '#112D4E',
+        'soft-blue': '#DBE2EF',
+        'snow': '#F9F7F7',
       },
     },
   },

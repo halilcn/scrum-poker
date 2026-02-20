@@ -87,12 +87,12 @@ export default function VotingCards() {
                       isUnknownCard
                         ? `border-2 ${
                             isSelected
-                              ? "border-[#5c91e8] text-[#5c91e8] -translate-y-2 shadow-md"
+                              ? "border-[#3F72AF] text-[#3F72AF] -translate-y-2 shadow-md"
                               : "border-orange-400 text-orange-400 bg-orange-25 hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50"
                           }`
-                        : `hover:border-[#5c91e8] hover:text-[#5c91e8] ${
+                        : `hover:border-[#3F72AF] hover:text-[#112D4E] ${
                             isSelected
-                              ? "border-[#5c91e8] text-[#5c91e8] -translate-y-2 shadow-md"
+                              ? "border-[#3F72AF] text-[#112D4E] -translate-y-2 shadow-md"
                               : ""
                           }`
                     }`}

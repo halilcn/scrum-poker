@@ -1,4 +1,5 @@
 export const COLORS = {
+  // Neutrals (unchanged)
   white: "#fafafa",
   gray50: "#f5f5f5",
   gray100: "#e5e5e5",
@@ -10,10 +11,20 @@ export const COLORS = {
   gray700: "#262626",
   gray800: "#171717",
   black: "#0a0a0a",
+
+  // Brand palette
+  primaryBlue: "#3F72AF",  // --primary
+  darkNavy: "#112D4E",     // Dark emphasis
+  softBlue: "#DBE2EF",     // --secondary
+  snow: "#F9F7F7",         // --background
+
+  // Legacy (maps to primaryBlue)
+  "stori-poi": "#3F72AF",
+
+  // Keep blue utilities for places not yet migrated
   blue400: "#60a5fa",
   blue500: "#3b82f6",
   blue600: "#2563eb",
-  "stori-poi": "#286ddb",
 };
 
 export const VOTING_CARDS = {

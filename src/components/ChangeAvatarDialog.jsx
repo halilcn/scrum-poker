@@ -93,7 +93,7 @@ export default function ChangeAvatarDialog({
                 onClick={() => setActiveTab("preset")}
                 className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "preset"
-                    ? "border-blue-500 text-blue-600"
+                    ? "border-[#3F72AF] text-[#3F72AF]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
@@ -104,7 +104,7 @@ export default function ChangeAvatarDialog({
                 onClick={() => setActiveTab("ai")}
                 className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "ai"
-                    ? "border-blue-500 text-blue-600"
+                    ? "border-[#3F72AF] text-[#3F72AF]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
@@ -127,8 +127,8 @@ export default function ChangeAvatarDialog({
                         transition-all hover:scale-105 hover:shadow-md
                         ${
                           selectedAvatar === avatarUrl
-                            ? "border-blue-500 ring-2 ring-blue-200"
-                            : "border-gray-200 hover:border-blue-300"
+                            ? "border-[#3F72AF] ring-2 ring-[#3F72AF]/30"
+                            : "border-gray-200 hover:border-[#3F72AF]"
                         }
                       `}
                       disabled={avatarLoading}
@@ -157,7 +157,7 @@ export default function ChangeAvatarDialog({
                     value={aiPrompt}
                     onChange={(e) => setAiPrompt(e.target.value)}
                     placeholder="A friendly cartoon character with glasses, wearing a blue hoodie, professional style, modern and colorful..."
-                    className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full min-h-[100px] p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3F72AF] focus:border-transparent resize-none"
                     disabled={aiGenerating || avatarLoading}
                   />
                   <div className="flex items-start gap-2">
@@ -172,7 +172,7 @@ export default function ChangeAvatarDialog({
                           "A professional cartoon avatar with friendly smile, wearing glasses, modern style with vibrant colors, suitable for a tech professional"
                         )
                       }
-                      className="text-xs text-blue-600 hover:text-blue-700 underline whitespace-nowrap"
+                      className="text-xs text-[#3F72AF] hover:text-[#112D4E] underline whitespace-nowrap"
                       disabled={aiGenerating || avatarLoading}
                     >
                       Use Example
@@ -219,7 +219,7 @@ export default function ChangeAvatarDialog({
 
                 {/* Generated Avatar Preview */}
                 {aiGeneratedAvatar && (
-                  <div className="flex flex-col items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+                  <div className="flex flex-col items-center gap-4 p-6 bg-[#DBE2EF] rounded-lg border-2 border-[#3F72AF]">
                     <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg">
                       <img
                         src={aiGeneratedAvatar}
@@ -231,7 +231,7 @@ export default function ChangeAvatarDialog({
                       type="button"
                       onClick={handleUseAIAvatar}
                       disabled={avatarLoading}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base"
+                      className="w-full bg-[#3F72AF] hover:bg-[#3F72AF]/90 text-white font-semibold py-3 text-base"
                       size="lg"
                     >
                       {avatarLoading ? "Saving..." : "Use This Avatar"}

@@ -27,14 +27,14 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#F9F7F7]">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-blue"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#F9F7F7] relative overflow-hidden">
       {/* Animated Background Effects */}
       <div className="absolute inset-0">
         {/* Large animated circles positioned on sides */}
@@ -43,7 +43,7 @@ export default function Home() {
           className="absolute -top-32 -left-64 w-[700px] h-[700px] rounded-full opacity-20"
           style={{
             background:
-              "radial-gradient(circle, #286ddb 0%, #4b7fe8 50%, transparent 70%)",
+              "radial-gradient(circle, #3F72AF 0%, #DBE2EF 50%, transparent 70%)",
             filter: "blur(80px)",
             animation: "float 20s ease-in-out infinite",
           }}
@@ -52,7 +52,7 @@ export default function Home() {
           className="absolute top-1/3 -left-96 w-[800px] h-[800px] rounded-full opacity-15"
           style={{
             background:
-              "radial-gradient(circle, #7ca8f5 0%, #286ddb 60%, transparent 80%)",
+              "radial-gradient(circle, #DBE2EF 0%, #112D4E 60%, transparent 80%)",
             filter: "blur(90px)",
             animation: "floatSlow 30s ease-in-out infinite",
           }}
@@ -61,7 +61,7 @@ export default function Home() {
           className="absolute bottom-32 -left-48 w-[600px] h-[600px] rounded-full opacity-18"
           style={{
             background:
-              "radial-gradient(circle, #4b7fe8 0%, #286ddb 40%, transparent 70%)",
+              "radial-gradient(circle, #3F72AF 0%, #112D4E 40%, transparent 70%)",
             filter: "blur(70px)",
             animation: "floatDelayed 25s ease-in-out infinite",
           }}
@@ -72,7 +72,7 @@ export default function Home() {
           className="absolute -top-48 -right-64 w-[900px] h-[900px] rounded-full opacity-15"
           style={{
             background:
-              "radial-gradient(circle, #5691f0 0%, #286ddb 50%, transparent 70%)",
+              "radial-gradient(circle, #3F72AF 0%, #112D4E 50%, transparent 70%)",
             filter: "blur(100px)",
             animation: "floatReverse 22s ease-in-out infinite",
           }}
@@ -81,7 +81,7 @@ export default function Home() {
           className="absolute top-1/2 -right-96 w-[700px] h-[700px] rounded-full opacity-12"
           style={{
             background:
-              "radial-gradient(circle, #286ddb 0%, #95bcf9 50%, transparent 70%)",
+              "radial-gradient(circle, #112D4E 0%, #DBE2EF 50%, transparent 70%)",
             filter: "blur(85px)",
             animation: "float 20s ease-in-out infinite",
           }}
@@ -89,7 +89,7 @@ export default function Home() {
         <div
           className="absolute -bottom-32 -right-48 w-[600px] h-[600px] rounded-full opacity-15"
           style={{
-            background: "radial-gradient(circle, #5691f0 0%, transparent 60%)",
+            background: "radial-gradient(circle, #3F72AF 0%, transparent 60%)",
             filter: "blur(60px)",
             animation: "floatSlow 30s ease-in-out infinite",
           }}
@@ -140,7 +140,7 @@ export default function Home() {
           </p>
 
           {/* User Section */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg mb-8 max-w-md mx-auto">
+          <div className="bg-[#F9F7F7] border border-gray-200 rounded-2xl p-8 shadow-lg mb-8 max-w-md mx-auto">
             {username ? (
               <div className="mb-6">
                 <p className="text-gray-500 text-sm mb-2">Welcome back,</p>
@@ -157,7 +157,7 @@ export default function Home() {
             {/* CTA Button */}
             <Button
               onClick={handleGetStarted}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-200 shadow-md hover:shadow-lg p-6"
+              className="w-full bg-[#3F72AF] hover:bg-[#3F72AF]/90 text-white font-semibold py-4 px-8 rounded-xl text-lg transition-all duration-200 shadow-md hover:shadow-lg p-6"
               size="lg"
             >
               {username ? "Continue Playing" : "Get Started"}
