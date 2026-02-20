@@ -79,4 +79,45 @@ export const shouldShowTooltip = (userPoint, roundedAverage) => {
   }
 
   return { shouldShow: false, isLower: false, isHigher: false };
-}; 
+};
+
+/**
+ * Get proximity info showing which two card values the average falls between
+ * and how close it is to each one.
+ * @param {number} average - The calculated average
+ * @returns {Object} - { isExactMatch, lowerCard, upperCard, closestCard, percentage }
+ */
+export const getProximityInfo = (average) => {
+  const numericCardValues = cardValues.map(Number);
+  const min = numericCardValues[0];
+  const max = numericCardValues[numericCardValues.length - 1];
+
+  const clamped = Math.max(min, Math.min(max, average));
+
+  const exactMatch = numericCardValues.find((v) => v === clamped);
+  if (exactMatch !== undefined) {
+    return {
+      isExactMatch: true,
+      lowerCard: exactMatch,
+      upperCard: exactMatch,
+      closestCard: exactMatch,
+      percentage: 50,
+    };
+  }
+
+  let lowerCard = numericCardValues[0];
+  let upperCard = numericCardValues[numericCardValues.length - 1];
+
+  for (let i = 0; i < numericCardValues.length - 1; i++) {
+    if (clamped > numericCardValues[i] && clamped < numericCardValues[i + 1]) {
+      lowerCard = numericCardValues[i];
+      upperCard = numericCardValues[i + 1];
+      break;
+    }
+  }
+
+  const percentage = ((clamped - lowerCard) / (upperCard - lowerCard)) * 100;
+  const closestCard = percentage > 50 ? upperCard : lowerCard;
+
+  return { isExactMatch: false, lowerCard, upperCard, closestCard, percentage };
+};

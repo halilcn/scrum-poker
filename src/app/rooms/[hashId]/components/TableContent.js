@@ -10,9 +10,8 @@ import {
 } from "@/lib/firebase/actions";
 import Lottie from "lottie-react";
 import { useState, useEffect, useRef } from "react";
-import { calculateAverage } from "@/utils/calculateAverage";
-import { checkVotingConsensus } from "@/utils/checkVotingConsensus";
-import { CheckCircle2 } from "lucide-react";
+import { calculateAverage, getProximityInfo } from "@/utils/calculateAverage";
+import NearestPointIndicator from "@/app/rooms/[hashId]/components/NearestPointIndicator";
 
 // Status constants
 const ROOM_STATUS = {
@@ -190,9 +189,7 @@ const CompletedContent = ({
 
   // Calculate average from participants with numeric points
   const { average } = calculateAverage(participants);
-
-  // Check if everyone voted the same
-  const { hasConsensus, consensusPoint } = checkVotingConsensus(participants);
+  const { isExactMatch } = getProximityInfo(average);
 
   const handleStartAgain = async () => {
     await resetRoomForNewVoting();
@@ -207,15 +204,19 @@ const CompletedContent = ({
       exit="exit"
       key="completed"
     >
-      <motion.p
-        className="text-lg font-medium"
-        style={{ color: `${COLORS.gray600}` }}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        Average: {average}
-      </motion.p>
+      {!isExactMatch && (
+        <motion.p
+          className="text-lg font-medium"
+          style={{ color: `${COLORS.gray600}` }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          Average: {average}
+        </motion.p>
+      )}
+
+      <NearestPointIndicator average={average} />
 
       {isRoomCreator && (
         <>
@@ -224,26 +225,13 @@ const CompletedContent = ({
             whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5 }}
             onClick={handleStartAgain}
             className="mt-2"
           >
             Start Again
           </MotionButton>
         </>
-      )}
-
-      {hasConsensus && (
-        <motion.div
-          className="flex items-center gap-2 mt-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <span className="text-sm text-green-600">
-            🎉 Everyone picked the same point!
-          </span>
-        </motion.div>
       )}
     </motion.div>
   );
