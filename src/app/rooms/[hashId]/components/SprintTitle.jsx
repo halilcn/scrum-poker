@@ -60,7 +60,7 @@ export default function SprintTitle() {
   useClickOutside(dropdownRef, closeAIInput);
 
   return (
-    <div className="w-full max-w-sm mx-auto mb-10 relative" ref={dropdownRef}>
+    <div className="w-full relative" ref={dropdownRef}>
       <div className="relative bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
         <Button
           variant="ghost"

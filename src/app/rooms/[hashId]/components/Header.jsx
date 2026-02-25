@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Copy, LogOut, User, UserCircle2 } from "lucide-react";
+import { Copy, LogOut, Settings, User, UserCircle2 } from "lucide-react";
 import { logoutFromRoom, updateParticipantUsername, updateParticipantAvatar } from "@/lib/firebase/actions";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { setUsernameCookie, getUserIdCookie } from "@/utils/cookieActions";
 import { generateAIAvatar } from "@/utils/avatarActions";
 import ChangeUsernameDialog from "./ChangeUsernameDialog";
 import ChangeAvatarDialog from "@/components/ChangeAvatarDialog";
+import RoomSettingsDialog from "./RoomSettingsDialog";
 import { useRoom } from "../context/RoomContext";
 import Image from "next/image";
 import Link from "next/link";
@@ -27,7 +28,8 @@ export default function Header() {
   const [usernameLoading, setUsernameLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
 
-  const { currentUser } = useRoom();
+  const { currentUser, isRoomCreator } = useRoom();
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const username = currentUser?.username || "";
   const avatarUrl = currentUser?.imageUrl || "";
 
@@ -133,6 +135,19 @@ export default function Header() {
 
         {/* Sağ taraf - Butonlar */}
         <div className="flex items-center gap-3">
+          {/* Settings Butonu - sadece room creator için */}
+          {isRoomCreator && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSettingsDialogOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              Settings
+            </Button>
+          )}
+
           {/* Link Butonu */}
           <Button
             variant="outline"
@@ -230,6 +245,12 @@ export default function Header() {
             handleAvatarSubmit={handleAvatarSubmit}
             currentAvatarUrl={avatarUrl}
             onAIGenerate={handleAIAvatarGenerate}
+          />
+
+          {/* Room Settings Dialog */}
+          <RoomSettingsDialog
+            open={settingsDialogOpen}
+            setOpen={setSettingsDialogOpen}
           />
         </div>
       </div>

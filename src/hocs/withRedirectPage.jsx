@@ -7,7 +7,7 @@ import {
   getUserIdCookie,
   getRoomIdCookie,
 } from "@/utils/cookieActions";
-import LoadingSpinner from "@/components/ui/loading-spinner";
+import FullPageLoader from "@/components/ui/FullPageLoader";
 
 const withRedirectPage = (WrappedComponent) => {
   return function RedirectWrapper(props) {
@@ -76,11 +76,7 @@ const withRedirectPage = (WrappedComponent) => {
     }, [router]);
 
     if (loading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <LoadingSpinner size={48} className="text-blue-600" />
-        </div>
-      );
+      return <FullPageLoader />;
     }
 
     return <WrappedComponent {...props} />;

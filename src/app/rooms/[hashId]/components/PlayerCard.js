@@ -122,25 +122,14 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
 
     // Eğer room status completed ise ve point var ise
     if (status === "completed" && hasPoint) {
-      // showRevealedCard true olana kadar kapalı kart göster
-      if (!showRevealedCard) {
-        return (
-          <Card
-            className="w-12 h-16 border-2 shadow-lg flex items-center justify-center"
-            style={{
-              backgroundColor: COLORS.darkNavy,
-              borderColor: COLORS.primaryBlue,
-            }}
-          >
-            <div
-              className="w-6 h-6 rounded-full backdrop-blur-sm"
-              style={{ backgroundColor: `${COLORS.white}30` }}
-            ></div>
-          </Card>
-        );
-      }
-      // 5 saniye sonra açık kart göster
-      return <PlayingCard isRevealed={true} value={player.point} />;
+      return (
+        <PlayingCard
+          isRevealed={showRevealedCard}
+          value={player.point}
+          flip={true}
+          voted={true}
+        />
+      );
     }
 
     // Default durum: kapalı kart
@@ -228,15 +217,15 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
         )}
 
         {/* Kullanıcı İsmi */}
-        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 max-w-[130px]">
-          <div className="flex items-center justify-center gap-2">
+        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+          <div className="inline-flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full pl-0.5 pr-2 py-0.5 shadow-sm">
             <img
               src={player.imageUrl || DEFAULT_AVATAR_URL}
               alt={`${player.username} avatar`}
-              className="w-6 h-6 rounded-full flex-shrink-0 border-1 border-white shadow-md ring-1 ring-gray-200 hover:shadow-lg transition-shadow duration-200"
+              className="w-5 h-5 rounded-full flex-shrink-0 ring-1 ring-gray-200"
             />
             <p
-              className="text-sm font-medium truncate"
+              className="text-sm font-medium"
               style={{ color: COLORS.gray800 }}
               title={player.username}
             >
@@ -244,7 +233,7 @@ const PlayerCard = forwardRef(function PlayerCard({ player }, ref) {
             </p>
             {player.breakStatus && player.breakStatus !== "none" && (
               <Coffee
-                className="w-4 h-4 flex-shrink-0"
+                className="w-3.5 h-3.5 flex-shrink-0"
                 style={{ color: COLORS.primaryBlue }}
               />
             )}

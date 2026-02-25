@@ -54,14 +54,14 @@ export default function PokerTable() {
       <AnimatePresence>
         {showGlow && (
           <motion.div
-            className="absolute -inset-3 rounded-[54px] pointer-events-none z-0"
+            className="absolute -inset-3 rounded-[66px] pointer-events-none z-0"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.97 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <div
-              className="absolute inset-0 rounded-[54px] animate-pulse"
+              className="absolute inset-0 rounded-[66px] animate-pulse"
               style={{
                 background:
                   "linear-gradient(135deg, #10b981 0%, #3F72AF 40%, #6366f1 70%, #10b981 100%)",
@@ -84,15 +84,16 @@ export default function PokerTable() {
       </AnimatePresence>
 
       <div
-        className="w-[300px] h-[145px] rounded-[42px] shadow-2xl border-3 relative overflow-hidden z-10"
+        className="w-[380px] h-[180px] rounded-[54px] shadow-2xl relative overflow-hidden z-10"
         style={{
           backgroundColor: COLORS.gray200,
           borderColor: showGlow ? "#10b981" : COLORS.gray400,
+          border: `3px solid ${showGlow ? "#10b981" : COLORS.gray400}`,
           transition: "border-color 0.6s ease",
         }}
       >
         <div
-          className="absolute inset-2 rounded-[34px] border-2"
+          className="absolute inset-2 rounded-[46px] border-2"
           style={{ borderColor: `${COLORS.gray300}50` }}
         ></div>
 

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "./components/Header";
-import SprintTitle from "./components/SprintTitle";
 import VotingCards from "./components/VotingCards";
 import GameContent from "./components/GameContent";
 import { RoomProvider, useRoom } from "./context/RoomContext";
@@ -29,6 +28,7 @@ import ChangeAvatarDialog from "@/components/ChangeAvatarDialog";
 import { updateParticipantAvatar } from "@/lib/firebase/actions";
 import { generateAIAvatar } from "@/utils/avatarActions";
 import { toast } from "sonner";
+import FullPageLoader from "@/components/ui/FullPageLoader";
 
 const ScrumRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -120,14 +120,7 @@ const ScrumRoom = () => {
   }, [urlRoomId, shouldSetBeforeUnloadListener]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading room...</p>
-        </div>
-      </div>
-    );
+    return <FullPageLoader message="Setting up your room..." />;
   }
 
   if (error) {
@@ -247,17 +240,9 @@ const ScrumRoomWithKickDetection = () => {
       <Header />
       {/* <Test /> */}
       {/* Content Area - Header altındaki tüm alan */}
-      <main className="flex-1 flex flex-col max-w-6xl w-full relative">
+      <main className="flex-1 flex items-center justify-center max-w-6xl w-full relative pb-32">
         <BreakButton />
-        {/* Sprint Title - Content'in en üstü */}
-        <div className="pt-4">
-          <SprintTitle />
-        </div>
-
-        {/* Main Content Area - Geri kalan alan */}
-        <div className="flex-1 px-6 pb-24">
-          <GameContent />
-        </div>
+        <GameContent />
       </main>
 
       {/* Voting Cards - Fixed bottom */}

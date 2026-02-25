@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { getUsernameCookie } from "@/utils/cookieActions";
 import { Button } from "@/components/ui/button";
+import FullPageLoader from "@/components/ui/FullPageLoader";
 
 export default function Home() {
   const [username, setUsername] = useState("");
@@ -26,11 +27,7 @@ export default function Home() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F9F7F7]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-blue"></div>
-      </div>
-    );
+    return <FullPageLoader />;
   }
 
   return (

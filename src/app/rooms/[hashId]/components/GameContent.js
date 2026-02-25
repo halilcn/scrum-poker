@@ -34,8 +34,8 @@ export default function GameContent() {
     // Masa boyutları ve merkez
     const centerX = 0;
     const centerY = 0;
-    const tableWidth = 300;
-    const tableHeight = 120;
+    const tableWidth = 380;
+    const tableHeight = 160;
     const offsetDistance = 110; // Masadan uzaklık (biraz azalttım)
 
     for (let i = 0; i < playerCount; i++) {
@@ -66,7 +66,7 @@ export default function GameContent() {
       <EmojiThrower playerRefs={playerRefs.current} />
 
       <div className="flex items-center justify-center">
-        <div className="relative w-[700px] h-[500px]">
+        <div className="relative w-[820px] h-[560px]">
           {/* Masa */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <PokerTable />
@@ -90,8 +90,8 @@ export default function GameContent() {
                   }}
                   exit={{ opacity: 0, scale: 0.7 }}
                   style={{
-                    left: `320px`,
-                    top: `200px`,
+                    left: `390px`,
+                    top: `230px`,
                     transform: `translate(-50%, -50%)`,
                     zIndex: 2,
                   }}
